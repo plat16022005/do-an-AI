@@ -22,6 +22,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
     banco.VeBanCo()
+    banco.VeQuanCo(banco_matrix)
     # pygame.display.update()
     pygame.display.flip()
 pygame.display.quit()
