@@ -37,7 +37,7 @@ vua_den = pygame.transform.scale(vua_den, (100, 100))
 tot_den = pygame.image.load('Sprite/tot_den.png')
 tot_den = pygame.transform.scale(tot_den, (100, 100))
 
-
+#code 
 class Board():
     def __init__(self, screen):
         self.screen = screen
