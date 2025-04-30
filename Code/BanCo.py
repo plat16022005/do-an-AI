@@ -42,16 +42,25 @@ class Board():
     def __init__(self, screen):
         self.screen = screen
 # Vẽ bàn cờ
-    def VeBanCo(self):
-        self.screen.fill('brown')
-        for i in range(32):
-            cot = i % 4
-            dong = i // 4
-            if dong % 2 == 0:
-                pygame.draw.rect(self.screen, 'light gray', [600 - (cot*200), dong*100, 100, 100])
-            else:
-                pygame.draw.rect(self.screen, 'light gray', [700 - (cot*200), dong*100, 100, 100])
-        
+    def VeBanCo(self, valid_moves=[]):
+        board_colors = {}
+        for row in range(8):
+            for col in range(8):
+                base_color = (211, 211, 211) if (row + col) % 2 == 0 else (165, 42, 42)
+                pygame.draw.rect(self.screen, base_color, [col * 100, row * 100, 100, 100])
+                board_colors[(row, col)] = base_color
+
+        # Vẽ màu pha trộn cho từng ô đi hợp lệ
+        highlight_color = (255, 255, 100)  # Màu vàng nhạt
+        for (row, col) in valid_moves:
+            base_color = board_colors.get((row, col), (240, 217, 181))  # Lấy màu gốc
+            mixed_color = (
+                (base_color[0] + highlight_color[0]) // 2, 
+                (base_color[1] + highlight_color[1]) // 2, 
+                (base_color[2] + highlight_color[2]) // 2
+            )  # Pha trộn màu
+
+            pygame.draw.rect(self.screen, mixed_color, [col * 100, row * 100, 100, 100])
 # Vẽ quân cờ theo ma trận
     def VeQuanCo(self, matrix):
         for i, row in enumerate(matrix):
