@@ -1,9 +1,11 @@
-
 import pygame
+import stockfish
 
 quan_da_chon = None  # Biến toàn cục để lưu quân đang được chọn
 luot = 't'
 nuoc_di_hop_le = []
+
+
 def DiChuyenCo(banco_matrix, event):
     global quan_da_chon, nuoc_di_hop_le, nhapthanh, xe_trang, xe_den, luot
     x, y = event.pos
@@ -12,7 +14,7 @@ def DiChuyenCo(banco_matrix, event):
     if quan_da_chon is None:
         quan_co = banco_matrix[row][col]
         if quan_co != '-' and quan_co[1] == luot:
-            if banco_matrix[row][col] in ['tt', 'td', 'nt', 'nd', 'xt','xd','Tt','Td','ht','hd','vt','vd']:  
+            if banco_matrix[row][col] in ['tt', 'td', 'nt', 'nd', 'xt', 'xd', 'Tt', 'Td', 'ht', 'hd', 'vt', 'vd']:
                 quan_da_chon = (row, col)
                 nuoc_di_hop_le = TimNuocDi(banco_matrix, row, col)  # Xác định nước đi hợp lệ
     else:
@@ -25,10 +27,15 @@ def DiChuyenCo(banco_matrix, event):
             banco_tam[row][col] = quan_co
             banco_tam[old_row][old_col] = '-'
 
-            # Kiểm tra xem vua có bị chiếu sau nước đi này không
-            vua_row, vua_col = TimViTriVua(banco_tam, quan_co[1])  # Tìm vị trí vua
+            # Tìm vị trí vua sau nước đi
+            if quan_co[0] == 'v':  # Nếu di chuyển vua
+                vua_row, vua_col = row, col
+            else:  # Nếu di chuyển quân khác
+                vua_row, vua_col = TimViTriVua(banco_tam, quan_co[1])
+
+            # Kiểm tra vua có bị chiếu không
             if not KiemTraChieu(banco_tam, vua_row, vua_col, quan_co[1]):
-                # Nếu không bị chiếu, thực hiện nước đi
+                # Thực hiện nước đi
                 banco_matrix[row][col] = quan_co
                 banco_matrix[old_row][old_col] = '-'
                 if luot == 't':
@@ -36,13 +43,16 @@ def DiChuyenCo(banco_matrix, event):
                 else:
                     luot = 't'
                 # Kiểm tra nếu là nhập thành
-                if (quan_co == 'vt' and nhapthanh[0] == True) or (quan_co == 'vd' and nhapthanh[1] == True):  # Vua trắng hoặc đen
+                if (quan_co == 'vt' and nhapthanh[0] == True) or (
+                        quan_co == 'vd' and nhapthanh[1] == True):  # Vua trắng hoặc đen
                     if abs(col - old_col) == 2:  # Nhập thành
                         # Di chuyển xe
-                        if col > old_col and ((quan_co == 'vt' and xe_trang[0] == True) or (quan_co == 'vd' and xe_den[0] == True)):  # Nhập thành phía vua (kingside)
+                        if col > old_col and ((quan_co == 'vt' and xe_trang[0] == True) or (
+                                quan_co == 'vd' and xe_den[0] == True)):  # Nhập thành phía vua (kingside)
                             banco_matrix[row][col - 1] = banco_matrix[row][7]  # Xe di chuyển đến cạnh vua
                             banco_matrix[row][7] = '-'
-                        elif col < old_col and ((quan_co == 'vt' and xe_trang[1] == True) or (quan_co == 'vd' and xe_den[1] == True)):  # Nhập thành phía hậu (queenside)
+                        elif col < old_col and ((quan_co == 'vt' and xe_trang[1] == True) or (
+                                quan_co == 'vd' and xe_den[1] == True)):  # Nhập thành phía hậu (queenside)
                             banco_matrix[row][col + 1] = banco_matrix[row][0]  # Xe di chuyển đến cạnh vua
                             banco_matrix[row][0] = '-'
                 if quan_co == 'vt' or quan_co == 'xt':
@@ -50,18 +60,19 @@ def DiChuyenCo(banco_matrix, event):
                         xe_trang[0] = False
                     elif quan_co == 'xt' and xe_trang[1] == True:
                         xe_trang[1] = False
-                    elif quan_co == 'vt' or (xe_trang == [False,False]):
+                    elif quan_co == 'vt' or (xe_trang == [False, False]):
                         nhapthanh[0] = False
                 elif quan_co == 'vd' or quan_co == 'xd':
                     if quan_co == 'xd' and xe_den[0] == True:
                         xe_den[0] = False
                     elif quan_co == 'xd' and xe_den[1] == True:
                         xe_den[1] = False
-                    elif quan_co == 'vd' or (xe_den == [False,False]):
+                    elif quan_co == 'vd' or (xe_den == [False, False]):
                         nhapthanh[1] = False
         # Hủy chọn sau khi di chuyển hoặc click ra ngoài
         quan_da_chon = None
         nuoc_di_hop_le = []
+
 
 def TimNuocDi(banco_matrix, row, col):
     """ Tìm nước đi hợp lệ cho tất cả các quân cờ """
@@ -70,7 +81,7 @@ def TimNuocDi(banco_matrix, row, col):
 
     if quan_co == 'tt':  # Tốt trắng đi lên
         # Đi thẳng nếu ô trước mặt trống
-        if row > 0 and banco_matrix[row - 1][col] == '-':  
+        if row > 0 and banco_matrix[row - 1][col] == '-':
             nuoc_di_hop_le.append((row - 1, col))
             if row == 6 and banco_matrix[row - 2][col] == '-':
                 nuoc_di_hop_le.append((row - 2, col))
@@ -83,7 +94,7 @@ def TimNuocDi(banco_matrix, row, col):
 
     elif quan_co == 'td':  # Tốt đen đi xuống
         # Đi thẳng nếu ô trước mặt trống
-        if row < 7 and banco_matrix[row + 1][col] == '-':  
+        if row < 7 and banco_matrix[row + 1][col] == '-':
             nuoc_di_hop_le.append((row + 1, col))
             if row == 1 and banco_matrix[row + 2][col] == '-':
                 nuoc_di_hop_le.append((row + 2, col))
@@ -93,7 +104,7 @@ def TimNuocDi(banco_matrix, row, col):
             nuoc_di_hop_le.append((row + 1, col - 1))
         if row < 7 and col < 7 and banco_matrix[row + 1][col + 1] != '-' and banco_matrix[row + 1][col + 1][1] == 't':
             nuoc_di_hop_le.append((row + 1, col + 1))
-            
+
     elif quan_co == 'nt':
         nuoc_di_hop_le_cua_quan_ngua = [
             (row - 2, col - 1), (row - 2, col + 1),
@@ -103,9 +114,9 @@ def TimNuocDi(banco_matrix, row, col):
         ]
         for (i, j) in nuoc_di_hop_le_cua_quan_ngua:
             if 0 <= i <= 7 and 0 <= j <= 7:
-                if banco_matrix[i][j] == '-' or banco_matrix[i][j][1] == 'd':  
+                if banco_matrix[i][j] == '-' or banco_matrix[i][j][1] == 'd':
                     nuoc_di_hop_le.append((i, j))
-                    
+
     elif quan_co == 'nd':
         nuoc_di_hop_le_cua_quan_ngua = [
             (row - 2, col - 1), (row - 2, col + 1),
@@ -115,30 +126,30 @@ def TimNuocDi(banco_matrix, row, col):
         ]
         for (i, j) in nuoc_di_hop_le_cua_quan_ngua:
             if 0 <= i <= 7 and 0 <= j <= 7:
-                if banco_matrix[i][j] == '-' or banco_matrix[i][j][1] == 't':  
+                if banco_matrix[i][j] == '-' or banco_matrix[i][j][1] == 't':
                     nuoc_di_hop_le.append((i, j))
     elif quan_co == 'xt':
         nuoc_di_hop_le_cua_quan_xe = []
         x = []
-        for i in range(1,8):
-            x.append((row+i,col))
+        for i in range(1, 8):
+            x.append((row + i, col))
         nuoc_di_hop_le_cua_quan_xe.append(x)
         x = []
-        for i in range(1,8):
-            x.append((row-i,col))
+        for i in range(1, 8):
+            x.append((row - i, col))
         nuoc_di_hop_le_cua_quan_xe.append(x)
         x = []
-        for i in range(1,8):
-            x.append((row,col+i))
+        for i in range(1, 8):
+            x.append((row, col + i))
         nuoc_di_hop_le_cua_quan_xe.append(x)
         x = []
-        for i in range(1,8):
-            x.append((row,col-i))
+        for i in range(1, 8):
+            x.append((row, col - i))
         nuoc_di_hop_le_cua_quan_xe.append(x)
         for z in nuoc_di_hop_le_cua_quan_xe:
-            for (i,j) in z:
+            for (i, j) in z:
                 if 0 <= i <= 7 and 0 <= j <= 7:
-                    if banco_matrix[i][j] == '-':  
+                    if banco_matrix[i][j] == '-':
                         nuoc_di_hop_le.append((i, j))
                     elif banco_matrix[i][j][1] == 'd':
                         nuoc_di_hop_le.append((i, j))
@@ -148,25 +159,25 @@ def TimNuocDi(banco_matrix, row, col):
     elif quan_co == 'xd':
         nuoc_di_hop_le_cua_quan_xe = []
         x = []
-        for i in range(1,8):
-            x.append((row+i,col))
+        for i in range(1, 8):
+            x.append((row + i, col))
         nuoc_di_hop_le_cua_quan_xe.append(x)
         x = []
-        for i in range(1,8):
-            x.append((row-i,col))
+        for i in range(1, 8):
+            x.append((row - i, col))
         nuoc_di_hop_le_cua_quan_xe.append(x)
         x = []
-        for i in range(1,8):
-            x.append((row,col+i))
+        for i in range(1, 8):
+            x.append((row, col + i))
         nuoc_di_hop_le_cua_quan_xe.append(x)
         x = []
-        for i in range(1,8):
-            x.append((row,col-i))
+        for i in range(1, 8):
+            x.append((row, col - i))
         nuoc_di_hop_le_cua_quan_xe.append(x)
         for z in nuoc_di_hop_le_cua_quan_xe:
-            for (i,j) in z:
+            for (i, j) in z:
                 if 0 <= i <= 7 and 0 <= j <= 7:
-                    if banco_matrix[i][j] == '-':  
+                    if banco_matrix[i][j] == '-':
                         nuoc_di_hop_le.append((i, j))
                     elif banco_matrix[i][j][1] == 't':
                         nuoc_di_hop_le.append((i, j))
@@ -174,15 +185,15 @@ def TimNuocDi(banco_matrix, row, col):
                     elif banco_matrix[i][j][1] == 'd':
                         break
     elif quan_co == 'Tt':
-        moves = [(-1,-1),(1,1),(-1,1),(1,-1)]
-        for i,j in moves:
+        moves = [(-1, -1), (1, 1), (-1, 1), (1, -1)]
+        for i, j in moves:
             new_row = row
             new_col = col
-            for k in range(1,8):
+            for k in range(1, 8):
                 new_row = new_row + i
-                new_col = new_col + j 
-                if 0 <= new_row  <= 7 and  0 <= new_col <= 7:
-                    if banco_matrix[new_row][new_col] == '-':  
+                new_col = new_col + j
+                if 0 <= new_row <= 7 and 0 <= new_col <= 7:
+                    if banco_matrix[new_row][new_col] == '-':
                         nuoc_di_hop_le.append((new_row, new_col))
                     elif banco_matrix[new_row][new_col][1] == 'd':
                         nuoc_di_hop_le.append((new_row, new_col))
@@ -190,15 +201,15 @@ def TimNuocDi(banco_matrix, row, col):
                     elif banco_matrix[new_row][new_col][1] == 't':
                         break
     elif quan_co == 'Td':
-        moves = [(-1,-1),(1,1),(-1,1),(1,-1)]
-        for i,j in moves:
+        moves = [(-1, -1), (1, 1), (-1, 1), (1, -1)]
+        for i, j in moves:
             new_row = row
             new_col = col
-            for k in range(1,8):
+            for k in range(1, 8):
                 new_row = new_row + i
-                new_col = new_col + j 
-                if 0 <= new_row  <= 7 and  0 <= new_col <= 7:
-                    if banco_matrix[new_row][new_col] == '-':  
+                new_col = new_col + j
+                if 0 <= new_row <= 7 and 0 <= new_col <= 7:
+                    if banco_matrix[new_row][new_col] == '-':
                         nuoc_di_hop_le.append((new_row, new_col))
                     elif banco_matrix[new_row][new_col][1] == 't':
                         nuoc_di_hop_le.append((new_row, new_col))
@@ -206,15 +217,15 @@ def TimNuocDi(banco_matrix, row, col):
                     elif banco_matrix[new_row][new_col][1] == 'd':
                         break
     elif quan_co == 'ht':
-        moves = [(-1,-1),(1,1),(-1,1),(1,-1),(-1,0),(1,0),(0,1),(0,-1)]
-        for i,j in moves:
+        moves = [(-1, -1), (1, 1), (-1, 1), (1, -1), (-1, 0), (1, 0), (0, 1), (0, -1)]
+        for i, j in moves:
             new_row = row
             new_col = col
-            for k in range(1,8):
+            for k in range(1, 8):
                 new_row = new_row + i
-                new_col = new_col + j 
-                if 0 <= new_row  <= 7 and  0 <= new_col <= 7:
-                    if banco_matrix[new_row][new_col] == '-':  
+                new_col = new_col + j
+                if 0 <= new_row <= 7 and 0 <= new_col <= 7:
+                    if banco_matrix[new_row][new_col] == '-':
                         nuoc_di_hop_le.append((new_row, new_col))
                     elif banco_matrix[new_row][new_col][1] == 'd':
                         nuoc_di_hop_le.append((new_row, new_col))
@@ -222,15 +233,15 @@ def TimNuocDi(banco_matrix, row, col):
                     elif banco_matrix[new_row][new_col][1] == 't':
                         break
     elif quan_co == 'hd':
-        moves = [(-1,-1),(1,1),(-1,1),(1,-1),(-1,0),(1,0),(0,1),(0,-1)]
-        for i,j in moves:
+        moves = [(-1, -1), (1, 1), (-1, 1), (1, -1), (-1, 0), (1, 0), (0, 1), (0, -1)]
+        for i, j in moves:
             new_row = row
             new_col = col
-            for k in range(1,8):
+            for k in range(1, 8):
                 new_row = new_row + i
-                new_col = new_col + j 
-                if 0 <= new_row  <= 7 and  0 <= new_col <= 7:
-                    if banco_matrix[new_row][new_col] == '-':  
+                new_col = new_col + j
+                if 0 <= new_row <= 7 and 0 <= new_col <= 7:
+                    if banco_matrix[new_row][new_col] == '-':
                         nuoc_di_hop_le.append((new_row, new_col))
                     elif banco_matrix[new_row][new_col][1] == 't':
                         nuoc_di_hop_le.append((new_row, new_col))
@@ -238,25 +249,25 @@ def TimNuocDi(banco_matrix, row, col):
                     elif banco_matrix[new_row][new_col][1] == 'd':
                         break
     elif quan_co == 'vt':
-        moves = [(-1,-1),(1,1),(-1,1),(1,-1),(-1,0),(1,0),(0,1),(0,-1)]
-        for (i,j) in moves:
+        moves = [(-1, -1), (1, 1), (-1, 1), (1, -1), (-1, 0), (1, 0), (0, 1), (0, -1)]
+        for (i, j) in moves:
             new_row = row + i
             new_col = col + j
-            if 0 <= new_row  <= 7 and  0 <= new_col <= 7:
-                if banco_matrix[new_row][new_col] == '-':  
+            if 0 <= new_row <= 7 and 0 <= new_col <= 7:
+                if banco_matrix[new_row][new_col] == '-':
                     nuoc_di_hop_le.append((new_row, new_col))
                 elif banco_matrix[new_row][new_col][1] == 'd':
                     nuoc_di_hop_le.append((new_row, new_col))
                     continue
                 elif banco_matrix[new_row][new_col][1] == 't':
                     continue
-    elif quan_co =='vd':
-        moves = [(-1,-1),(1,1),(-1,1),(1,-1),(-1,0),(1,0),(0,1),(0,-1)]
-        for (i,j) in moves:
+    elif quan_co == 'vd':
+        moves = [(-1, -1), (1, 1), (-1, 1), (1, -1), (-1, 0), (1, 0), (0, 1), (0, -1)]
+        for (i, j) in moves:
             new_row = row + i
             new_col = col + j
-            if 0 <= new_row  <= 7 and  0 <= new_col <= 7:
-                if banco_matrix[new_row][new_col] == '-':  
+            if 0 <= new_row <= 7 and 0 <= new_col <= 7:
+                if banco_matrix[new_row][new_col] == '-':
                     nuoc_di_hop_le.append((new_row, new_col))
                 elif banco_matrix[new_row][new_col][1] == 't':
                     nuoc_di_hop_le.append((new_row, new_col))
@@ -267,28 +278,36 @@ def TimNuocDi(banco_matrix, row, col):
         # Nhập thành phía vua (kingside)
         if (banco_matrix[7][5] == '-' and banco_matrix[7][6] == '-' and
                 banco_matrix[7][7] == 'xt' and not KiemTraChieu(banco_matrix, 7, 4, 't') and
-                not KiemTraChieu(banco_matrix, 7, 5, 't') and not KiemTraChieu(banco_matrix, 7, 6, 't') and nhapthanh[0]):
+                not KiemTraChieu(banco_matrix, 7, 5, 't') and not KiemTraChieu(banco_matrix, 7, 6, 't') and nhapthanh[
+                    0]):
             nuoc_di_hop_le.append((7, 6))  # Nhập thành phía vua
         # Nhập thành phía hậu (queenside)
         if (banco_matrix[7][1] == '-' and banco_matrix[7][2] == '-' and banco_matrix[7][3] == '-' and
                 banco_matrix[7][0] == 'xt' and not KiemTraChieu(banco_matrix, 7, 4, 't') and
-                not KiemTraChieu(banco_matrix, 7, 3, 't') and not KiemTraChieu(banco_matrix, 7, 2, 't') and nhapthanh[0]):
+                not KiemTraChieu(banco_matrix, 7, 3, 't') and not KiemTraChieu(banco_matrix, 7, 2, 't') and nhapthanh[
+                    0]):
             nuoc_di_hop_le.append((7, 2))  # Nhập thành phía hậu
     elif quan_co == 'vd':  # Vua đen
         # Nhập thành phía vua (kingside)
         if (banco_matrix[0][5] == '-' and banco_matrix[0][6] == '-' and
                 banco_matrix[0][7] == 'xd' and not KiemTraChieu(banco_matrix, 0, 4, 'd') and
-                not KiemTraChieu(banco_matrix, 0, 5, 'd') and not KiemTraChieu(banco_matrix, 0, 6, 'd') and nhapthanh[1]):
+                not KiemTraChieu(banco_matrix, 0, 5, 'd') and not KiemTraChieu(banco_matrix, 0, 6, 'd') and nhapthanh[
+                    1]):
             nuoc_di_hop_le.append((0, 6))  # Nhập thành phía vua
         # Nhập thành phía hậu (queenside)
         if (banco_matrix[0][1] == '-' and banco_matrix[0][2] == '-' and banco_matrix[0][3] == '-' and
                 banco_matrix[0][0] == 'xd' and not KiemTraChieu(banco_matrix, 0, 4, 'd') and
-                not KiemTraChieu(banco_matrix, 0, 3, 'd') and not KiemTraChieu(banco_matrix, 0, 2, 'd') and nhapthanh[1]):
+                not KiemTraChieu(banco_matrix, 0, 3, 'd') and not KiemTraChieu(banco_matrix, 0, 2, 'd') and nhapthanh[
+                    1]):
             nuoc_di_hop_le.append((0, 2))  # Nhập thành phía hậu
     return nuoc_di_hop_le
-nhapthanh = [True,True]
+
+
+nhapthanh = [True, True]
 xe_trang = [True, True]
 xe_den = [True, True]
+
+
 def KiemTraChieu(banco_matrix, vua_row, vua_col, mau_quan):
     """
     Kiểm tra xem vua có đang bị chiếu hay không.
@@ -296,32 +315,63 @@ def KiemTraChieu(banco_matrix, vua_row, vua_col, mau_quan):
     - vua_row, vua_col: Vị trí của vua trên bàn cờ.
     - mau_quan: Màu của quân vua ('t' cho trắng, 'd' cho đen).
     """
-    # Kiểm tra các hướng tấn công từ quân đối phương
-    directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+    doi_phuong = 'd' if mau_quan == 't' else 't'
+
+    # Kiểm tra tấn công từ quân tốt
+    huong_tan_cong = -1 if mau_quan == 't' else 1
+    for dc in [-1, 1]:
+        r, c = vua_row + huong_tan_cong, vua_col + dc
+        if 0 <= r < 8 and 0 <= c < 8:
+            quan = banco_matrix[r][c]
+            if quan == ('t' + doi_phuong):  # Tốt đối phương
+                return True
+
+    # Kiểm tra tấn công từ mã (knight)
+    knight_moves = [(-2, -1), (-2, 1), (-1, -2), (-1, 2),
+                    (1, -2), (1, 2), (2, -1), (2, 1)]
+    for dr, dc in knight_moves:
+        r, c = vua_row + dr, vua_col + dc
+        if 0 <= r < 8 and 0 <= c < 8:
+            quan = banco_matrix[r][c]
+            if quan == ('n' + doi_phuong):  # Mã đối phương
+                return True
+
+    # Kiểm tra tấn công từ xe, hậu (theo hàng ngang/dọc)
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
     for dr, dc in directions:
         r, c = vua_row + dr, vua_col + dc
         while 0 <= r < 8 and 0 <= c < 8:
             quan = banco_matrix[r][c]
             if quan != '-':
-                if quan[1] != mau_quan:  # Quân đối phương
-                    if (dr, dc) in directions and quan[0] in ['h', 'T']:  # Hậu hoặc tượng
-                        return True
-                    if (dr == 0 or dc == 0) and quan[0] == 'x':  # Xe
-                        return True
-                    if abs(dr) == 1 and abs(dc) == 1 and quan[0] == 't' and quan[1] != mau_quan:  # Tốt
-                        return True
-                break  # Dừng kiểm tra nếu gặp quân đồng minh hoặc quân đối phương
+                if quan[1] == doi_phuong and (quan[0] == 'x' or quan[0] == 'h'):
+                    return True
+                break
             r += dr
             c += dc
 
-    # Kiểm tra mã (knight)
-    knight_moves = [(-2, -1), (-2, 1), (-1, -2), (-1, 2), (1, -2), (1, 2), (2, -1), (2, 1)]
-    for dr, dc in knight_moves:
+    # Kiểm tra tấn công từ tượng, hậu (theo đường chéo)
+    directions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
+    for dr, dc in directions:
         r, c = vua_row + dr, vua_col + dc
-        if 0 <= r < 8 and 0 <= c < 8:
+        while 0 <= r < 8 and 0 <= c < 8:
             quan = banco_matrix[r][c]
-            if quan != '-' and quan[0] == 'n' and quan[1] != mau_quan:  # Mã đối phương
-                return True
+            if quan != '-':
+                if quan[1] == doi_phuong and (quan[0] == 'T' or quan[0] == 'h'):
+                    return True
+                break
+            r += dr
+            c += dc
+
+    # Kiểm tra tấn công từ vua đối phương (ô liền kề)
+    for dr in [-1, 0, 1]:
+        for dc in [-1, 0, 1]:
+            if dr == 0 and dc == 0:
+                continue
+            r, c = vua_row + dr, vua_col + dc
+            if 0 <= r < 8 and 0 <= c < 8:
+                quan = banco_matrix[r][c]
+                if quan == ('v' + doi_phuong):
+                    return True
 
     return False
 
@@ -333,68 +383,86 @@ def KiemTraChieuBi(banco_matrix, vua_row, vua_col, mau_quan):
     - vua_row, vua_col: Vị trí của vua trên bàn cờ.
     - mau_quan: Màu của quân vua ('t' cho trắng, 'd' cho đen).
     """
-    # Kiểm tra xem vua có đang bị chiếu hay không
     if not KiemTraChieu(banco_matrix, vua_row, vua_col, mau_quan):
         return False
 
-    # Kiểm tra xem có nước đi nào để thoát khỏi chiếu hay không
+    # 1. Kiểm tra vua có thể di chuyển đến ô không bị chiếu
     for dr in [-1, 0, 1]:
         for dc in [-1, 0, 1]:
             if dr == 0 and dc == 0:
                 continue
             new_row, new_col = vua_row + dr, vua_col + dc
             if 0 <= new_row < 8 and 0 <= new_col < 8:
-                # Di chuyển vua tạm thời
+                # Kiểm tra ô mới không bị quân đối phương tấn công
                 quan_tam = banco_matrix[new_row][new_col]
-                banco_matrix[new_row][new_col] = 'v' + mau_quan
-                banco_matrix[vua_row][vua_col] = '-'
+                if quan_tam == '-' or quan_tam[1] != mau_quan:
+                    # Tạo bàn cờ tạm
+                    banco_tam = [hang.copy() for hang in banco_matrix]
+                    banco_tam[vua_row][vua_col] = '-'
+                    banco_tam[new_row][new_col] = 'v' + mau_quan
 
-                # Kiểm tra xem vua có còn bị chiếu sau khi di chuyển hay không
-                if not KiemTraChieu(banco_matrix, new_row, new_col, mau_quan):
-                    # Khôi phục lại bàn cờ
-                    banco_matrix[vua_row][vua_col] = 'v' + mau_quan
-                    banco_matrix[new_row][new_col] = quan_tam
-                    return False
+                    if not KiemTraChieu(banco_tam, new_row, new_col, mau_quan):
+                        return False  # Còn nước đi thoát chiếu
 
-                # Khôi phục lại bàn cờ
-                banco_matrix[vua_row][vua_col] = 'v' + mau_quan
-                banco_matrix[new_row][new_col] = quan_tam
+    # 2. Kiểm tra có thể chặn chiếu bằng quân khác hoặc ăn quân đang chiếu
+    # Tìm quân đang chiếu vua
+    for row in range(8):
+        for col in range(8):
+            if banco_matrix[row][col] != '-' and banco_matrix[row][col][1] == mau_quan:
+                nuoc_di_hop_le = TimNuocDi(banco_matrix, row, col)
+                for move in nuoc_di_hop_le:
+                    banco_tam = [hang.copy() for hang in banco_matrix]
+                    banco_tam[move[0]][move[1]] = banco_tam[row][col]
+                    banco_tam[row][col] = '-'
 
-    return True
+                    # Kiểm tra sau khi di chuyển, vua còn bị chiếu không
+                    if not KiemTraChieu(banco_tam, vua_row, vua_col, mau_quan):
+                        return False  # Còn nước đi thoát chiếu
+
+    return True  # Không còn nước đi thoát chiếu
 
 
 def KiemTraThangThua(banco_matrix, luot_choi):
     """
     Kiểm tra xem trò chơi đã kết thúc hay chưa (chiếu bí hoặc hòa).
-    - banco_matrix: Ma trận bàn cờ.
-    - luot_choi: Lượt chơi hiện tại ('t' cho trắng, 'd' cho đen).
+    Trả về:
+    - 'thang': Nếu đối phương bị chiếu bí
+    - 'thua': Nếu bị chiếu bí
+    - 'hoa': Nếu hòa
+    - None: Nếu game tiếp tục
     """
-    # Tìm vị trí của vua
-    vua_row, vua_col = -1, -1
-    for row in range(8):
-        for col in range(8):
-            if banco_matrix[row][col] == 'v' + luot_choi:
-                vua_row, vua_col = row, col
-                break
-        if vua_row != -1:
-            break
-
+    # Tìm vị trí vua
+    vua_row, vua_col = TimViTriVua(banco_matrix, luot_choi)
     if vua_row == -1 or vua_col == -1:
-        return "Hòa"  # Không tìm thấy vua (trường hợp bất thường)
+        return 'hoa'  # Không tìm thấy vua (trường hợp bất thường)
 
-    # Kiểm tra chiếu bí
+    # Kiểm tra chiếu bí cho người chơi hiện tại
     if KiemTraChieuBi(banco_matrix, vua_row, vua_col, luot_choi):
-        return "Chiếu bí! " + ("Trắng" if luot_choi == 't' else "Đen") + " thua."
+        return 'thua'
+
+    # Kiểm tra chiếu bí cho đối phương
+    doi_phuong = 'd'
+    vua_doi_phuong_row, vua_doi_phuong_col = TimViTriVua(banco_matrix, doi_phuong)
+    if KiemTraChieuBi(banco_matrix, vua_doi_phuong_row, vua_doi_phuong_col, doi_phuong):
+        return 'thang'
 
     # Kiểm tra hòa (không có nước đi hợp lệ)
+    co_nuoc_di = False
     for row in range(8):
         for col in range(8):
             if banco_matrix[row][col] != '-' and banco_matrix[row][col][1] == luot_choi:
-                nuoc_di_hop_le = TimNuocDi(banco_matrix, row, col)
-                if nuoc_di_hop_le:
-                    return None  # Trò chơi tiếp tục
+                if TimNuocDi(banco_matrix, row, col):
+                    co_nuoc_di = True
+                    break
+        if co_nuoc_di:
+            break
 
-    return "Hòa"  # Không có nước đi hợp lệ
+    if not co_nuoc_di and not KiemTraChieu(banco_matrix, vua_row, vua_col, luot_choi):
+        return 'hoa'
+
+    return None  # Game tiếp tục
+
+
 def TimViTriVua(banco_matrix, mau_quan):
     """
     Tìm vị trí của vua trên bàn cờ.
@@ -405,6 +473,8 @@ def TimViTriVua(banco_matrix, mau_quan):
             if banco_matrix[row][col] == 'v' + mau_quan:
                 return row, col
     return -1, -1  # Trường hợp bất thường (không tìm thấy vua)
+
+
 def KiemTraSauNuocDi(banco_matrix, luot_choi):
     """
     Kiểm tra chiếu và chiếu bí sau mỗi nước đi.
@@ -437,6 +507,8 @@ def KiemTraSauNuocDi(banco_matrix, luot_choi):
 
     # Nếu không có gì đặc biệt, trò chơi tiếp tục
     return None
+
+
 def HienThiThongBao(man_hinh, thong_bao):
     """
     Hiển thị thông báo thắng/thua lên màn hình.
@@ -448,3 +520,185 @@ def HienThiThongBao(man_hinh, thong_bao):
     text_rect = text.get_rect(center=(400, 300))  # Vị trí giữa màn hình
     man_hinh.blit(text, text_rect)  # Vẽ thông báo lên màn hình
     pygame.display.flip()  # Cập nhật màn hình
+
+
+def ThietLapBanCo(banco_matrix, luot):
+    """
+    Thiết lập bàn cờ trong Stockfish.
+    - banco_matrix: Ma trận bàn cờ của bạn.
+    - luot: Lượt đi hiện tại ('t' hoặc 'd').
+    """
+    # Chuyển đổi bàn cờ của bạn sang định dạng FEN
+    fen = ChuyenDoiSangFEN(banco_matrix, luot)
+
+    # Gửi lệnh position đến Stockfish
+    stockfish.stdin.write(f"position fen {fen}\n")
+    stockfish.stdin.flush()
+
+
+def ChuyenDoiSangFEN(banco_matrix, luot):
+    """
+    Chuyển đổi bàn cờ từ định dạng của bạn sang FEN.
+    - banco_matrix: Ma trận 8x8 mô tả bàn cờ.
+    - luot: Lượt đi hiện tại ('t' hoặc 'd').
+    - Trả về chuỗi FEN.
+    """
+    quan_co_to_fen = {
+        'tt': 'P', 'td': 'p',
+        'nt': 'N', 'nd': 'n',
+        'xt': 'R', 'xd': 'r',
+        'Tt': 'B', 'Td': 'b',
+        'ht': 'Q', 'hd': 'q',
+        'vt': 'K', 'vd': 'k',
+        '-': '1'
+    }
+
+    fen_position = []
+    for row in banco_matrix:
+        fen_row = []
+        empty_count = 0
+        for cell in row:
+            if cell == '-':
+                empty_count += 1
+            else:
+                if empty_count > 0:
+                    fen_row.append(str(empty_count))
+                    empty_count = 0
+                fen_row.append(quan_co_to_fen[cell])
+        if empty_count > 0:
+            fen_row.append(str(empty_count))
+        fen_position.append(''.join(fen_row))
+    fen_position = '/'.join(fen_position)
+
+    fen_turn = 'w' if luot == 't' else 'b'
+    fen_castling = 'KQkq'
+    fen_en_passant = '-'
+    fen_halfmove_clock = '0'
+    fen_fullmove_number = '1'
+
+    fen = f"{fen_position} {fen_turn} {fen_castling} {fen_en_passant} {fen_halfmove_clock} {fen_fullmove_number}"
+    return fen
+
+
+def YeuCauNuocDi(stockfish, banco_matrix, luot, thoi_gian=2.0):
+    """
+    Yêu cầu Stockfish tính toán nước đi tốt nhất.
+    - stockfish: Đối tượng Stockfish.
+    - banco_matrix: Ma trận bàn cờ của bạn.
+    - luot: Lượt đi hiện tại ('t' hoặc 'd').
+    - thoi_gian: Thời gian tính toán (giây).
+    - Trả về nước đi tốt nhất dưới dạng tuple (start_row, start_col, end_row, end_col).
+    """
+    # Chuyển đổi bàn cờ sang FEN
+    fen = ChuyenDoiSangFEN(banco_matrix, luot)
+
+    # Gửi lệnh position đến Stockfish
+    stockfish.stdin.write(f"position fen {fen}\n")
+    stockfish.stdin.flush()
+
+    # Gửi lệnh go với thời gian tính toán
+    stockfish.stdin.write(f"go movetime {int(thoi_gian * 1000)}\n")
+    stockfish.stdin.flush()
+
+    # Đọc phản hồi từ Stockfish
+    while True:
+        output = stockfish.stdout.readline().strip()
+        if output.startswith("bestmove"):
+            best_move_uci = output.split()[1]  # Lấy nước đi tốt nhất
+            return ChuyenDoiNuocDi(best_move_uci)
+
+
+def ChuyenDoiNuocDi(best_move_uci):
+    """
+    Chuyển đổi nước đi từ định dạng UCI sang định dạng của bạn.
+    - best_move_uci: Nước đi dưới dạng UCI (ví dụ: "e2e4").
+    - Trả về nước đi dưới dạng tuple (start_row, start_col, end_row, end_col).
+    """
+    start_col = ord(best_move_uci[0]) - ord('a')
+    start_row = 8 - int(best_move_uci[1])
+    end_col = ord(best_move_uci[2]) - ord('a')
+    end_row = 8 - int(best_move_uci[3])
+    return (start_row, start_col, end_row, end_col)
+
+
+def VeNutAI(man_hinh):
+    """
+    Vẽ nút "AI chơi" lên màn hình.
+    """
+    font = pygame.font.Font(None, 36)
+    nut_ai_rect = pygame.Rect(650, 500, 120, 40)  # Vị trí và kích thước nút
+    pygame.draw.rect(man_hinh, (0, 128, 0), nut_ai_rect)  # Màu nền xanh lá
+    nut_text = font.render("AI chơi", True, (255, 255, 255))  # Màu chữ trắng
+    nut_text_rect = nut_text.get_rect(center=nut_ai_rect.center)
+    man_hinh.blit(nut_text, nut_text_rect)
+    return nut_ai_rect
+
+
+def AIChoi(stockfish, banco_matrix, luot, thoi_gian=2.0):
+    if stockfish is not None:
+        # Sử dụng Stockfish
+        fen = ChuyenDoiSangFEN(banco_matrix, luot)
+        stockfish.stdin.write(f"position fen {fen}\n")
+        stockfish.stdin.flush()
+        stockfish.stdin.write(f"go movetime {int(thoi_gian * 1000)}\n")
+        stockfish.stdin.flush()
+
+        while True:
+            output = stockfish.stdout.readline().strip()
+            if output.startswith("bestmove"):
+                best_move_uci = output.split()[1]
+                return ChuyenDoiNuocDi(best_move_uci)
+    return None
+
+
+def CapNhatBanCo(banco_matrix, nuoc_di):
+    """
+    Cập nhật bàn cờ sau nước đi.
+    - banco_matrix: Ma trận bàn cờ.
+    - nuoc_di: Nước đi dưới dạng tuple (start_row, start_col, end_row, end_col).
+    - Trả về bàn cờ đã được cập nhật.
+    """
+    start_row, start_col, end_row, end_col = nuoc_di
+
+    # Kiểm tra nếu nước đi là nhập thành
+    if abs(start_col - end_col) == 2 and banco_matrix[start_row][start_col] in ['vt', 'vd']:
+        banco_matrix = XuLyNhapThanh(banco_matrix, nuoc_di)
+    else:
+        # Xử lý nước đi thông thường
+        banco_matrix[end_row][end_col] = banco_matrix[start_row][start_col]
+        banco_matrix[start_row][start_col] = '-'
+
+    return banco_matrix
+
+
+def AIChoiThread(stockfish, banco_matrix, luot):
+    nuoc_di = AIChoi(stockfish, banco_matrix, luot)
+    if nuoc_di:
+        return nuoc_di
+    return None
+
+
+def XuLyNhapThanh(banco_matrix, nuoc_di):
+    """
+    Xử lý nước đi nhập thành.
+    - banco_matrix: Ma trận bàn cờ.
+    - nuoc_di: Nước đi dưới dạng tuple (start_row, start_col, end_row, end_col).
+    - Trả về bàn cờ đã được cập nhật.
+    """
+    start_row, start_col, end_row, end_col = nuoc_di
+
+    # Kiểm tra nếu nước đi là nhập thành
+    if abs(start_col - end_col) == 2 and banco_matrix[start_row][start_col] in ['vt', 'vd']:
+        # Di chuyển vua
+        banco_matrix[end_row][end_col] = banco_matrix[start_row][start_col]
+        banco_matrix[start_row][start_col] = '-'
+
+        # Di chuyển xe
+        if end_col > start_col:  # Nhập thành phía vua (kingside)
+            banco_matrix[end_row][end_col - 1] = banco_matrix[end_row][7]  # Xe di chuyển đến cạnh vua
+            banco_matrix[end_row][7] = '-'
+        else:  # Nhập thành phía hậu (queenside)
+            banco_matrix[end_row][end_col + 1] = banco_matrix[end_row][0]  # Xe di chuyển đến cạnh vua
+            banco_matrix[end_row][0] = '-'
+
+    return banco_matrix
