@@ -4,7 +4,7 @@ import QuanCo
 import subprocess
 import threading
 import queue
-
+import AI
 # Khởi tạo Pygame
 pygame.init()
 screen = pygame.display.set_mode((800, 800))
@@ -53,13 +53,11 @@ ai_result_queue2 = queue.Queue()
 ai_thread2 = None
 running = True
 
-
 # Hàm để chạy AI trên luồng riêng
 def AIChoiThread(stockfish, banco_matrix, luot, result_queue):
     nuoc_di = QuanCo.AIChoi(stockfish, banco_matrix, luot)
     if nuoc_di:
         result_queue.put(nuoc_di)
-
 
 # Vòng lặp chính
 while running:
@@ -69,14 +67,14 @@ while running:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if QuanCo.luot == 't':
                 QuanCo.DiChuyenCo(banco_matrix, event)
-
+                
                 # Vẽ lại bàn cờ với nước đi cuối cùng
                 banco.VeBanCo(QuanCo.nuoc_di_hop_le)
                 banco.VeQuanCo(banco_matrix)
                 pygame.display.flip()
-
+                
                 # Hiển thị nước đi trong 1 giây trước khi kiểm tra kết quả
-
+                
                 ket_qua = QuanCo.KiemTraSauNuocDi(banco_matrix, QuanCo.luot)
                 if ket_qua == 'thang':
                     QuanCo.HienThiThongBao(screen, "wHITE WIN!")
@@ -89,19 +87,18 @@ while running:
             # if QuanCo.luot == 't' and (ai_thread1 is None or not ai_thread1.is_alive()):
             #     ai_thread1 = threading.Thread(target=AIChoiThread, args=(stockfish,banco_matrix, QuanCo.luot, ai_result_queue1))
             #     ai_thread1.start()
-            # Sau khi quân trắng đi xong, bắt đầu luồng AI cho quân đen
+                # Sau khi quân trắng đi xong, bắt đầu luồng AI cho quân đen
             # if QuanCo.luot == 'd' and (ai_thread2 is None or not ai_thread2.is_alive()):
             #     ai_thread2 = threading.Thread(target=AIChoiThread, args=(stockfish, banco_matrix, QuanCo.luot, ai_result_queue2))
             #     ai_thread2.start()
             if QuanCo.luot == 'd' and (ai_thread2 is None or not ai_thread2.is_alive()):
-                ai_thread2 = threading.Thread(target=AIChoiThread,
-                                              args=(stockfish, banco_matrix, QuanCo.luot, ai_result_queue2))
+                ai_thread2 = threading.Thread(target=AIChoiThread, args=(stockfish, banco_matrix, QuanCo.luot, ai_result_queue2))
                 ai_thread2.start()
     # if ai_thread1 and not ai_thread1.is_alive():
     #     if not ai_result_queue1.empty():
     #         nuoc_di = ai_result_queue1.get()
     #         banco_matrix = QuanCo.CapNhatBanCo(banco_matrix, nuoc_di)
-
+            
     #         banco.VeBanCo(QuanCo.nuoc_di_hop_le)
     #         banco.VeQuanCo(banco_matrix)
     #         pygame.display.flip()
@@ -124,14 +121,14 @@ while running:
         if not ai_result_queue2.empty():
             nuoc_di = ai_result_queue2.get()
             banco_matrix = QuanCo.CapNhatBanCo(banco_matrix, nuoc_di)
-
+            
             # Vẽ lại bàn cờ với nước đi cuối cùng
             banco.VeBanCo(QuanCo.nuoc_di_hop_le)
             banco.VeQuanCo(banco_matrix)
             pygame.display.flip()
-
+            
             # Hiển thị nước đi trong 1 giây trước khi kiểm tra kết quả
-
+            
             QuanCo.luot = 't'  # Đổi lượt về quân trắng
 
             # Kiểm tra kết quả sau nước đi của quân đen
