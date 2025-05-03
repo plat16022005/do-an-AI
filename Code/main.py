@@ -11,7 +11,7 @@ screen = pygame.display.set_mode((800, 800))
 pygame.display.set_caption('Cờ vua AI')
 
 # Khởi tạo Stockfish
-STOCKFISH_PATH = "Code\\stockfish\\stockfish-windows-x86-64-avx2"
+STOCKFISH_PATH = "D:\\Đồ án AI\\stockfish\\stockfish-windows-x86-64-avx2"
 stockfish = subprocess.Popen(
     STOCKFISH_PATH,
     stdin=subprocess.PIPE,
@@ -32,7 +32,6 @@ while True:
     if output == "uciok":
         break
 
-# Khởi tạo bàn cờ
 banco_matrix = [
     ['xd', 'nd', 'Td', 'hd', 'vd', 'Td', 'nd', 'xd'],
     ['td', 'td', 'td', 'td', 'td', 'td', 'td', 'td'],
@@ -42,6 +41,16 @@ banco_matrix = [
     ['-', '-', '-', '-', '-', '-', '-', '-'],
     ['tt', 'tt', 'tt', 'tt', 'tt', 'tt', 'tt', 'tt'],
     ['xt', 'nt', 'Tt', 'ht', 'vt', 'Tt', 'nt', 'xt']
+]
+banco_matrix = [
+    ['vd', '-', '-', '-', '-', 'Td', '-', '-'],
+    ['-', 'td', '-', 'td', 'td', 'td', 'td', 'xd'],
+    ['-', 'tt', '-', 'td', '-', '-', '-', 'td'],
+    ['-', '-', '-', 'tt', '-', 'tt', '-', '-'],
+    ['-', '-', 'tt', 'vt', 'tt', '-', '-', 'tt'],
+    ['-', '-', '-', 'Tt', '-', '-', 'tt', '-'],
+    ['-', '-', 'nt', '-', '-', '-', '-', '-'],
+    ['-', '-', 'hd', '-', '-', '-', '-', '-']
 ]
 banco = Board(screen)
 
@@ -75,7 +84,7 @@ while running:
                 
                 # Hiển thị nước đi trong 1 giây trước khi kiểm tra kết quả
                 
-                ket_qua = QuanCo.KiemTraSauNuocDi(banco_matrix, QuanCo.luot)
+                ket_qua = QuanCo.KiemTraThangThua(banco_matrix, QuanCo.luot)
                 if ket_qua == 'thang':
                     QuanCo.HienThiThongBao(screen, "wHITE WIN!")
                     running = False
@@ -94,28 +103,28 @@ while running:
             if QuanCo.luot == 'd' and (ai_thread2 is None or not ai_thread2.is_alive()):
                 ai_thread2 = threading.Thread(target=AIChoiThread, args=(stockfish, banco_matrix, QuanCo.luot, ai_result_queue2))
                 ai_thread2.start()
-    # if ai_thread1 and not ai_thread1.is_alive():
-    #     if not ai_result_queue1.empty():
-    #         nuoc_di = ai_result_queue1.get()
-    #         banco_matrix = QuanCo.CapNhatBanCo(banco_matrix, nuoc_di)
+    if ai_thread1 and not ai_thread1.is_alive():
+        if not ai_result_queue1.empty():
+            nuoc_di = ai_result_queue1.get()
+            banco_matrix = QuanCo.CapNhatBanCo(banco_matrix, nuoc_di)
             
-    #         banco.VeBanCo(QuanCo.nuoc_di_hop_le)
-    #         banco.VeQuanCo(banco_matrix)
-    #         pygame.display.flip()
-    #         QuanCo.luot = 'd'  # Đổi lượt về quân trắng
+            banco.VeBanCo(QuanCo.nuoc_di_hop_le)
+            banco.VeQuanCo(banco_matrix)
+            pygame.display.flip()
+            QuanCo.luot = 'd'  # Đổi lượt về quân trắng
 
-    #         # Kiểm tra kết quả sau nước đi của quân đen
-    #         ket_qua = QuanCo.KiemTraSauNuocDi(banco_matrix, QuanCo.luot)
-    #         if ket_qua == 'thang':
-    #             QuanCo.HienThiThongBao(screen, "WHITE win!")
-    #             pygame.time.wait(5000)
-    #             running = False
-    #         elif ket_qua == 'thua':
-    #             QuanCo.HienThiThongBao(screen, "BLACK WIN!")
-    #             pygame.time.wait(5000)
-    #             running = False
-    #         elif ket_qua == 'chieu':
-    #             print("Bạn đang bị chiếu!")
+            # Kiểm tra kết quả sau nước đi của quân đen
+            ket_qua = QuanCo.KiemTraSauNuocDi(banco_matrix, QuanCo.luot)
+            if ket_qua == 'thang':
+                QuanCo.HienThiThongBao(screen, "WHITE win!")
+                pygame.time.wait(5000)
+                running = False
+            elif ket_qua == 'thua':
+                QuanCo.HienThiThongBao(screen, "BLACK WIN!")
+                pygame.time.wait(5000)
+                running = False
+            elif ket_qua == 'chieu':
+                print("Bạn đang bị chiếu!")
     # Kiểm tra xem AI đã hoàn thành nước đi chưa
     if ai_thread2 and not ai_thread2.is_alive():
         if not ai_result_queue2.empty():
@@ -132,7 +141,7 @@ while running:
             QuanCo.luot = 't'  # Đổi lượt về quân trắng
 
             # Kiểm tra kết quả sau nước đi của quân đen
-            ket_qua = QuanCo.KiemTraSauNuocDi(banco_matrix, QuanCo.luot)
+            ket_qua = QuanCo.KiemTraThangThua(banco_matrix, 't')
             if ket_qua == 'thang':
                 QuanCo.HienThiThongBao(screen, "White Win!")
                 pygame.time.wait(5000)

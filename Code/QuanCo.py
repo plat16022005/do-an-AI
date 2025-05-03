@@ -418,36 +418,16 @@ def KiemTraThangThua(banco_matrix, luot_choi):
     - 'hoa': Nếu hòa
     - None: Nếu game tiếp tục
     """
-    # Tìm vị trí vua
-    vua_row, vua_col = TimViTriVua(banco_matrix, luot_choi)
-    if vua_row == -1 or vua_col == -1:
-        return 'hoa'  # Không tìm thấy vua (trường hợp bất thường)
-
-    # Kiểm tra chiếu bí cho người chơi hiện tại
-    if KiemTraChieuBi(banco_matrix, vua_row, vua_col, luot_choi):
-        return 'thua'
-    
-    # Kiểm tra chiếu bí cho đối phương
-    doi_phuong = 'd'
-    vua_doi_phuong_row, vua_doi_phuong_col = TimViTriVua(banco_matrix, doi_phuong)
-    if KiemTraChieuBi(banco_matrix, vua_doi_phuong_row, vua_doi_phuong_col, doi_phuong):
-        return 'thang'
-    
-    # Kiểm tra hòa (không có nước đi hợp lệ)
-    co_nuoc_di = False
-    for row in range(8):
-        for col in range(8):
-            if banco_matrix[row][col] != '-' and banco_matrix[row][col][1] == luot_choi:
-                if TimNuocDi(banco_matrix, row, col):
-                    co_nuoc_di = True
-                    break
-        if co_nuoc_di:
-            break
-    
-    if not co_nuoc_di and not KiemTraChieu(banco_matrix, vua_row, vua_col, luot_choi):
-        return 'hoa'
-    
-    return None  # Game tiếp tục
+    nuocdi = LayTatCaNuocDiHopLe(banco_matrix,luot_choi)
+    vua = TimViTriVua(banco_matrix,luot_choi)
+    if len(nuocdi) == 0:
+        if KiemTraChieu(banco_matrix,vua[0],vua[1],luot_choi):
+            if luot_choi == 'd':
+                return 'thang'
+            elif luot_choi == 't':
+                return 'thua'
+        else:
+            return 'hoa'
 def TimViTriVua(banco_matrix, mau_quan):
     """
     Tìm vị trí của vua trên bàn cờ.
@@ -679,3 +659,37 @@ def XuLyNhapThanh(banco_matrix, nuoc_di):
             banco_matrix[end_row][0] = '-'
 
     return banco_matrix
+def LayTatCaNuocDiHopLe(banco_matrix, luot):
+    """
+    Lấy tất cả nước đi hợp lệ cho màu quân hiện tại
+    - banco_matrix: ma trận bàn cờ
+    - luot: 't' cho trắng, 'd' cho đen
+    Trả về: danh sách các nước đi dạng [(start_row, start_col, end_row, end_col), ...]
+    """
+    tat_ca_nuoc_di = []
+    
+    for row in range(8):
+        for col in range(8):
+            quan_co = banco_matrix[row][col]
+            if quan_co != '-' and quan_co[1] == luot:  # Nếu là quân cờ cùng màu lượt đi
+                # Lấy các nước đi hợp lệ cho quân cờ này
+                cac_nuoc_di = TimNuocDi(banco_matrix, row, col)
+                
+                # Kiểm tra từng nước đi có hợp lệ không (không để vua bị chiếu)
+                for end_row, end_col in cac_nuoc_di:
+                    # Tạo bàn cờ tạm để kiểm tra
+                    banco_tam = [hang.copy() for hang in banco_matrix]
+                    banco_tam[end_row][end_col] = banco_tam[row][col]
+                    banco_tam[row][col] = '-'
+                    
+                    # Tìm vị trí vua sau nước đi
+                    if quan_co[0] == 'v':  # Nếu di chuyển vua
+                        vua_row, vua_col = end_row, end_col
+                    else:
+                        vua_row, vua_col = TimViTriVua(banco_tam, luot)
+                    
+                    # Nếu vua không bị chiếu thì thêm vào danh sách
+                    if not KiemTraChieu(banco_tam, vua_row, vua_col, luot):
+                        tat_ca_nuoc_di.append((row, col, end_row, end_col))
+    
+    return tat_ca_nuoc_di
