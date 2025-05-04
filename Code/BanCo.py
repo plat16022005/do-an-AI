@@ -1,40 +1,42 @@
 import pygame
+
+loai = 1
 # Load và scale các quân cờ trắng
-xe_trang = pygame.image.load('Sprite/xe_trang.png')
+xe_trang = pygame.image.load(f'Sprite/xe_trang({loai}).png')
 xe_trang = pygame.transform.scale(xe_trang, (100, 100))
 
-ngua_trang = pygame.image.load('Sprite/ngua_trang.png')
+ngua_trang = pygame.image.load(f'Sprite/ngua_trang({loai}).png')
 ngua_trang = pygame.transform.scale(ngua_trang, (100, 100))
 
-tuong_trang = pygame.image.load('Sprite/tuong_trang.png')
+tuong_trang = pygame.image.load(f'Sprite/tuong_trang({loai}).png')
 tuong_trang = pygame.transform.scale(tuong_trang, (100, 100))
 
-hau_trang = pygame.image.load('Sprite/hau_trang.png')
+hau_trang = pygame.image.load(f'Sprite/hau_trang({loai}).png')
 hau_trang = pygame.transform.scale(hau_trang, (100, 100))
 
-vua_trang = pygame.image.load('Sprite/vua_trang.png')
+vua_trang = pygame.image.load(f'Sprite/vua_trang({loai}).png')
 vua_trang = pygame.transform.scale(vua_trang, (100, 100))
 
-tot_trang = pygame.image.load('Sprite/tot_trang.png')
+tot_trang = pygame.image.load(f'Sprite/tot_trang({loai}).png')
 tot_trang = pygame.transform.scale(tot_trang, (100, 100))
 
 # Load và scale các quân cờ đen
-xe_den = pygame.image.load('Sprite/xe_den.png')
+xe_den = pygame.image.load(f'Sprite/xe_den({loai}).png')
 xe_den = pygame.transform.scale(xe_den, (100, 100))
 
-ngua_den = pygame.image.load('Sprite/ngua_den.png')
+ngua_den = pygame.image.load(f'Sprite/ngua_den({loai}).png')
 ngua_den = pygame.transform.scale(ngua_den, (100, 100))
 
-tuong_den = pygame.image.load('Sprite/tuong_den.png')
+tuong_den = pygame.image.load(f'Sprite/tuong_den({loai}).png')
 tuong_den = pygame.transform.scale(tuong_den, (100, 100))
 
-hau_den = pygame.image.load('Sprite/hau_den.png')
+hau_den = pygame.image.load(f'Sprite/hau_den({loai}).png')
 hau_den = pygame.transform.scale(hau_den, (100, 100))
 
-vua_den = pygame.image.load('Sprite/vua_den.png')
+vua_den = pygame.image.load(f'Sprite/vua_den({loai}).png')
 vua_den = pygame.transform.scale(vua_den, (100, 100))
 
-tot_den = pygame.image.load('Sprite/tot_den.png')
+tot_den = pygame.image.load(f'Sprite/tot_den({loai}).png')
 tot_den = pygame.transform.scale(tot_den, (100, 100))
 
 

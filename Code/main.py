@@ -42,16 +42,16 @@ banco_matrix = [
     ['tt', 'tt', 'tt', 'tt', 'tt', 'tt', 'tt', 'tt'],
     ['xt', 'nt', 'Tt', 'ht', 'vt', 'Tt', 'nt', 'xt']
 ]
-banco_matrix = [
-    ['vd', '-', '-', '-', '-', 'Td', '-', '-'],
-    ['-', 'td', '-', 'td', 'td', 'td', 'td', 'xd'],
-    ['-', 'tt', '-', 'td', '-', '-', '-', 'td'],
-    ['-', '-', '-', 'tt', '-', 'tt', '-', '-'],
-    ['-', '-', 'tt', 'vt', 'tt', '-', '-', 'tt'],
-    ['-', '-', '-', 'Tt', '-', '-', 'tt', '-'],
-    ['-', '-', 'nt', '-', '-', '-', '-', '-'],
-    ['-', '-', 'hd', '-', '-', '-', '-', '-']
-]
+# banco_matrix = [
+#     ['vd', '-', '-', '-', '-', 'Td', '-', '-'],
+#     ['-', 'td', '-', 'td', 'td', 'td', 'td', 'xd'],
+#     ['-', 'tt', '-', 'td', '-', '-', '-', 'td'],
+#     ['-', '-', '-', 'tt', '-', 'tt', '-', '-'],
+#     ['-', '-', 'tt', 'vt', 'tt', '-', '-', 'tt'],
+#     ['-', '-', '-', 'Tt', '-', '-', 'tt', '-'],
+#     ['-', '-', 'nt', '-', '-', '-', '-', '-'],
+#     ['-', '-', 'hd', '-', '-', '-', '-', '-']
+# ]
 banco = Board(screen)
 
 ai_result_queue1 = queue.Queue()
@@ -63,8 +63,8 @@ ai_thread2 = None
 running = True
 
 # Hàm để chạy AI trên luồng riêng
-def AIChoiThread(stockfish, banco_matrix, luot, result_queue):
-    nuoc_di = QuanCo.AIChoi(stockfish, banco_matrix, luot)
+def AIChoiThread(stockfish, banco_matrix, luot, luachon, result_queue):
+    nuoc_di = QuanCo.AIChoi(stockfish, banco_matrix, luot, luachon)
     if nuoc_di:
         result_queue.put(nuoc_di)
 
@@ -94,14 +94,16 @@ while running:
                 elif ket_qua == 'chieu':
                     print("Bạn đang bị chiếu! Hãy thoát khỏi chiếu.")
             # if QuanCo.luot == 't' and (ai_thread1 is None or not ai_thread1.is_alive()):
-            #     ai_thread1 = threading.Thread(target=AIChoiThread, args=(stockfish,banco_matrix, QuanCo.luot, ai_result_queue1))
+            #     choice = 'alpha-beta prunning'
+            #     ai_thread1 = threading.Thread(target=AIChoiThread, args=(None,banco_matrix, QuanCo.luot, choice,ai_result_queue1))
             #     ai_thread1.start()
                 # Sau khi quân trắng đi xong, bắt đầu luồng AI cho quân đen
             # if QuanCo.luot == 'd' and (ai_thread2 is None or not ai_thread2.is_alive()):
             #     ai_thread2 = threading.Thread(target=AIChoiThread, args=(stockfish, banco_matrix, QuanCo.luot, ai_result_queue2))
             #     ai_thread2.start()
             if QuanCo.luot == 'd' and (ai_thread2 is None or not ai_thread2.is_alive()):
-                ai_thread2 = threading.Thread(target=AIChoiThread, args=(stockfish, banco_matrix, QuanCo.luot, ai_result_queue2))
+                choice = 'alpha-beta prunning'
+                ai_thread2 = threading.Thread(target=AIChoiThread, args=(None, banco_matrix, QuanCo.luot, choice,ai_result_queue2))
                 ai_thread2.start()
     if ai_thread1 and not ai_thread1.is_alive():
         if not ai_result_queue1.empty():

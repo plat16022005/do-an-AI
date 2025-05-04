@@ -576,20 +576,10 @@ def ChuyenDoiNuocDi(best_move_uci):
     end_col = ord(best_move_uci[2]) - ord('a')
     end_row = 8 - int(best_move_uci[3])
     return (start_row, start_col, end_row, end_col)
-
-def VeNutAI(man_hinh):
-    """
-    Vẽ nút "AI chơi" lên màn hình.
-    """
-    font = pygame.font.Font(None, 36)
-    nut_ai_rect = pygame.Rect(650, 500, 120, 40)  # Vị trí và kích thước nút
-    pygame.draw.rect(man_hinh, (0, 128, 0), nut_ai_rect)  # Màu nền xanh lá
-    nut_text = font.render("AI chơi", True, (255, 255, 255))  # Màu chữ trắng
-    nut_text_rect = nut_text.get_rect(center=nut_ai_rect.center)
-    man_hinh.blit(nut_text, nut_text_rect)
-    return nut_ai_rect
-
-def AIChoi(stockfish, banco_matrix, luot, thoi_gian=2.0):
+May_MCTS = AI.MCTSAI()
+# MAY_ALPHA_BETA = AI.AlphaBeta_Prunning()
+May_Hybrid = AI.HybridChessAI()
+def AIChoi(stockfish, banco_matrix, luot, luachon, thoi_gian=2.0):
     if stockfish is not None:
         # Sử dụng Stockfish
         fen = ChuyenDoiSangFEN(banco_matrix, luot)
@@ -604,11 +594,22 @@ def AIChoi(stockfish, banco_matrix, luot, thoi_gian=2.0):
                 best_move_uci = output.split()[1]
                 return ChuyenDoiNuocDi(best_move_uci)
     else:
+        if luachon == 'alpha-beta prunning':
         # Sử dụng AI custom
-        is_white = (luot == 't')
-        move = AI.ai_make_move(banco_matrix, depth=3, is_white=is_white)
-        if move:
-            return move
+            is_white = (luot == 't')
+            move = AI.ai_make_move(banco_matrix, depth=3, is_white=is_white)
+            if move:
+                return move
+        elif luachon == 'MTCS':
+            is_white = (luot == 't')
+            move = May_MCTS.ai_make_move(banco_matrix, is_white=is_white)
+            if move:
+                return move
+        elif luachon == 'Hybrid':
+            is_white = (luot == 't')
+            move = May_Hybrid.get_best_move(banco_matrix, is_white=is_white)
+            if move:
+                return move
     return None
 def CapNhatBanCo(banco_matrix, nuoc_di):
     """
@@ -628,12 +629,6 @@ def CapNhatBanCo(banco_matrix, nuoc_di):
         banco_matrix[start_row][start_col] = '-'
 
     return banco_matrix
-
-def AIChoiThread(stockfish, banco_matrix, luot):
-    nuoc_di = AIChoi(stockfish, banco_matrix, luot)
-    if nuoc_di:
-        return nuoc_di
-    return None
 
 def XuLyNhapThanh(banco_matrix, nuoc_di):
     """
