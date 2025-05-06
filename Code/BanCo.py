@@ -1,6 +1,6 @@
 import pygame
-
-loai = 1
+import UI
+loai = UI.style
 # Load và scale các quân cờ trắng
 xe_trang = pygame.image.load(f'Sprite/xe_trang({loai}).png')
 xe_trang = pygame.transform.scale(xe_trang, (100, 100))
@@ -45,6 +45,7 @@ class Board():
         self.screen = screen
 # Vẽ bàn cờ
     def VeBanCo(self, valid_moves=[]):
+        print(loai)
         board_colors = {}
         for row in range(8):
             for col in range(8):
