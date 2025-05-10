@@ -1,6 +1,11 @@
 import copy
 import random
 import math
+from queue import PriorityQueue
+import heapq
+import copy
+from collections import deque
+import sys
 # Hệ số giá trị quân cờ
 piece_values = {
     'tt': 1, 'td': -1,   # Tốt
@@ -634,7 +639,7 @@ class MCTSAI:
             node.wins += result if node.is_white else -result
             node = node.parent
     
-    def best_move(self, board, is_white, iterations=1000):
+    def best_move(self, board, is_white, iterations=10):
         root = self.Node(board, is_white=is_white)
         
         # Trước tiên kiểm tra xem có nước đi chiếu bí ngay lập tức không
@@ -665,7 +670,7 @@ class MCTSAI:
         
         return best_child.move
     
-    def ai_make_move(self, board, is_white=True, iterations=1000):
+    def ai_make_move(self, board, is_white=True, iterations=100):
         """Giao diện chính để AI thực hiện nước đi"""
         best_move = self.best_move(board, is_white, iterations)
         if best_move:
@@ -709,20 +714,84 @@ class MCTSAI:
             if not self.is_check(new_board, is_white):
                 return False
         return True
-class HybridChessAI:
-    def __init__(self):
-        self.mcts = MCTSAI()
-        self.alpha_beta_depth = 3  # Độ sâu mặc định cho Alpha-Beta
-        self.use_mcts_threshold = 10  # Ngưỡng quân cờ để chuyển sang MCTS
+def a_star_best_move(board, is_white, max_depth=3):
 
-    def choose_algorithm(self, board):
-        """Quyết định dùng MCTS hay Alpha-Beta dựa trên độ phức tạp"""
-        piece_count = sum(1 for row in board for cell in row if cell != '-')
-        return "mcts" if piece_count <= self.use_mcts_threshold else "alpha_beta"
+    def f_score(g, h):
+        return g + h
 
-    def get_best_move(self, board, is_white):
-        algorithm = self.choose_algorithm(board)
-        if algorithm == "mcts":
-            return self.mcts.ai_make_move(board, is_white, iterations=1000)
-        else:
-            return ai_make_move(board, is_white)
+    open_list = []
+    visited = set()
+    root_h = evaluate_board(board)
+    heapq.heappush(open_list, (f_score(0, root_h), 0, root_h, None, board))  # (f, g, h, move, board)
+
+    best_move = None
+    best_h = None
+
+    while open_list:
+        f, g, h, move_so_far, current_board = heapq.heappop(open_list)
+
+        if g >= max_depth:
+            continue
+
+        possible_moves = generate_all_moves(current_board, is_white)
+
+        for move in possible_moves:
+            new_board = make_move(current_board, move)
+            new_g = g + 1
+            new_h = evaluate_board(new_board)
+            heapq.heappush(open_list, (f_score(new_g, new_h), new_g, new_h, move, new_board))
+
+            if best_move is None:
+                best_move = move
+                best_h = new_h
+            elif (not is_white and new_h > best_h) or (is_white and new_h < best_h):
+                best_move = move
+                best_h = new_h
+
+    return best_move
+
+def DFS(board, is_white, max_depth=1):
+    open_list = []
+    open_list.append((0, None, board))  # (cost, depth, move, board)
+    
+    best_move = None
+
+
+    while open_list:
+        depth, move, current_board = open_list.pop()
+
+        if depth >= max_depth:
+            continue
+
+        possible_moves = generate_all_moves(current_board, is_white)
+        for move in possible_moves:
+            new_board = make_move(copy.deepcopy(current_board), move)
+
+
+            open_list.append((depth + 1, move, new_board))
+
+
+            best_move = move
+
+    return best_move
+
+def Stochastic_Hill_Climbing(board, is_white, max_depth=1):
+    current_board = board
+    best_move = None
+
+    for _ in range(max_depth):  # giới hạn số bước nếu muốn
+        neighbors = []
+        possible_moves = generate_all_moves(current_board, is_white)
+        for move in possible_moves:
+            new_board = make_move(copy.deepcopy(current_board), move)
+            if evaluate_board(new_board) > evaluate_board(current_board):
+                neighbors.append((new_board, move))
+        
+        if not neighbors:
+            break  # không còn neighbor tốt hơn
+
+        next_board, next_move = random.choice(neighbors)
+        current_board = next_board
+        best_move = next_move  # cập nhật move tốt hơn
+
+    return best_move
