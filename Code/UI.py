@@ -14,7 +14,7 @@ screen = pygame.display.set_mode((800, 800))
 pygame.display.set_caption("Chess AI")
 
 background_image = pygame.image.load("Sprite/background.jpg")
-background_image = pygame.transform.scale(background_image, (800, 540))  # Resize the image to fit the screen
+background_image = pygame.transform.scale(background_image, (800, 800))  # Resize the image to fit the screen
 background_image_rect = background_image.get_rect(center=(400, 400))
 style1_image = pygame.image.load("Sprite/vua_den(0).png")
 style1_image = pygame.transform.scale(style1_image, (200, 200))  # Resize the image to fit the screen
