@@ -113,9 +113,13 @@ def START():
                 text_rect_AI = text_AI.get_rect(center=(400, 250))
                 screen.blit(text_AI_border, text_rect_AI_border)
                 screen.blit(text_AI, text_rect_AI)
-                NutStockfish = button(300, 300, 200, 50, "Stockfish", 'darkblue', (255, 255, 255))
+                NutStockfish = button(100, 300, 200, 50, "Stockfish", 'darkblue', (255, 255, 255))
                 NutAlphaBeta = button(300, 400, 200, 50, "Alpha-Beta", 'blue', (255, 255, 255))
-                NutMCTS = button(300, 500, 200, 50, "MCTS", 'lightblue', (255, 255, 255))
+                NutMCTS = button(100, 500, 200, 50, "MCTS", 'lightblue', (255, 255, 255))
+                NutDFS = button(500, 300, 200, 50, "DFS", 'lightblue', (255, 255, 255))
+                NutAStar = button(500, 400, 200, 50, "A*", 'lightblue', (255, 255, 255))
+                NutStochastic = button(500, 500, 200, 50, "Stochastic", 'lightblue', (255, 255, 255))
+                
 
             elif mode == 'AI vs AI':
                 font = pygame.font.Font(None, 48)
@@ -182,6 +186,15 @@ def START():
                         if NutMCTS and NutMCTS.collidepoint(event.pos):
                             may = 'MCTS'
                             text = 'MCTS'
+                        if NutDFS and NutDFS.collidepoint(event.pos):
+                            may = 'DFS'
+                            text = 'DFS'
+                        if NutAStar and NutAStar.collidepoint(event.pos):
+                            may = 'A*'
+                            text = 'A*'
+                        if NutStochastic and NutStochastic.collidepoint(event.pos):
+                            may = 'Stochastic'
+                            text = 'Stochastic'
                     if mode == 'AI vs AI':
                         if NutStockfish1 and NutStockfish1.collidepoint(event.pos):
                             may1 = 'Stockfish'
