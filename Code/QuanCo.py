@@ -632,6 +632,21 @@ def AIChoi(stockfish, banco_matrix, luot, luachon, thoi_gian=2.0):
             move = May_MCTS.ai_make_move(banco_matrix, is_white=is_white)
             if move:
                 return move
+        elif luachon == 'A*':
+            is_white = (luot == 't')
+            move = AI.a_star_best_move(banco_matrix, is_white=is_white)
+            if move:
+                return move
+        elif luachon == 'DFS':
+            is_white = (luot == 't')
+            move = AI.DFS(banco_matrix, is_white=is_white)
+            if move:
+                return move
+        elif luachon == 'Stochastic':
+            is_white = (luot == 't')
+            move = AI.Stochastic(banco_matrix, is_white=is_white)
+            if move:
+                return move
     return None
 
 
@@ -642,7 +657,7 @@ def CapNhatBanCo(banco_matrix, nuoc_di):
     - nuoc_di: Nước đi dưới dạng tuple (start_row, start_col, end_row, end_col).
     - Trả về bàn cờ đã được cập nhật.
     """
-    start_row, start_col, end_row, end_col = nuoc_di
+    (start_row, start_col), (end_row, end_col) = nuoc_di
 
     # Kiểm tra nếu nước đi là nhập thành
     if abs(start_col - end_col) == 2 and banco_matrix[start_row][start_col] in ['vt', 'vd']:
