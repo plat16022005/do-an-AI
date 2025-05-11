@@ -142,7 +142,7 @@ position_scores = {
 
 
 def evaluate_board(board):
-    """Đánh giá bàn cờ với cả giá trị quân và vị trí"""
+    """Đánh giá bàn cờ với cả giá trị quân và vị trí trả về điểm """
     score = 0
     for row in range(8):
         for col in range(8):
@@ -156,6 +156,9 @@ def evaluate_board(board):
                     pos_score = position_scores[piece][row][col] if piece[1] == 't' else -position_scores[piece][7-row][col]
                     score += pos_score*10
                     
+    # white_score = len(generate_all_moves(board, True))
+    # black_score = len(generate_all_moves(board, False))
+    # score += (white_score - black_score) * 0.1  
     return score
 
 
@@ -793,5 +796,92 @@ def Stochastic_Hill_Climbing(board, is_white, max_depth=1):
         next_board, next_move = random.choice(neighbors)
         current_board = next_board
         best_move = next_move  # cập nhật move tốt hơn
-
     return best_move
+
+def king_is_checked(board,is_white):
+    """kiểm tra xem vua có bị chiếu hay không"""
+    if is_white:
+        king_symbol = 'vt'
+    else:
+        king_symbol = 'vd'
+    
+    pos_king = None
+    for row in range(8):
+        for col in range(8):
+            if board[row][col] == king_symbol:
+                pos_king = (row, col)
+                break
+    
+    if not pos_king:
+        return False
+
+    enemy_moves = generate_all_moves(board, not is_white)
+    for move in enemy_moves:
+        _,(e_row,e_col) = move
+        if (e_row,e_col) == pos_king:
+            return True
+
+    return False
+
+def queen_is_checked(board,is_white):
+    """kiểm tra xem quân hậu có bị ăn hay không"""
+    if is_white:
+        queen_symbol = 'ht'
+    else:
+        queen_symbol = 'hd'
+    
+    pos_queen = None
+    for row in range(8):
+        for col in range(8):
+            if board[row][col] == queen_symbol:
+                pos_queen = (row, col)
+                break
+    
+    if not pos_queen:
+        return False
+
+    enemy_moves = generate_all_moves(board, not is_white)
+    for move in enemy_moves:
+        _,(e_row,e_col) = move
+        if (e_row,e_col) == pos_queen:
+            return True
+
+    return False
+
+
+def constraints(board,is_white,move):
+    """ràng buộc cho nhóm thuật toán ràng buộc"""
+    
+    if king_is_checked(board,is_white):
+        return False
+    
+    # if queen_is_checked(board,is_white):
+    #     return False
+    
+    return True
+
+def backtracking(board, is_white, depth=2): 
+    
+    best_move = None
+    best_eval = -float('inf') if is_white else float('inf')
+    
+    if depth == 0:
+        return evaluate_board(board), None
+    
+    moves = generate_all_moves(board, is_white)
+    for move in moves:
+        new_board = make_move(board, move)
+        if not constraints(board, is_white, move):
+            continue
+        eval_tmp, _ = backtracking(new_board, not  is_white, depth-1)
+
+        if is_white:
+            if eval_tmp > best_eval:
+                best_eval = eval_tmp
+                best_move = move
+        else:
+            if eval_tmp < best_eval:
+                best_eval = eval_tmp
+                best_move = move
+
+    return best_eval,best_move

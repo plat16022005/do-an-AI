@@ -644,7 +644,12 @@ def AIChoi(stockfish, banco_matrix, luot, luachon, thoi_gian=2.0):
                 return move
         elif luachon == 'Stochastic':
             is_white = (luot == 't')
-            move = AI.Stochastic(banco_matrix, is_white=is_white)
+            move = AI.Stochastic_Hill_Climbing(banco_matrix, is_white=is_white)
+            if move:
+                return move
+        elif luachon == 'Backtracking':
+            is_white = (luot == 't')
+            _,move = AI.backtracking(banco_matrix, is_white=is_white)
             if move:
                 return move
     return None

@@ -119,7 +119,7 @@ def START():
                 NutDFS = button(500, 300, 200, 50, "DFS", 'lightblue', (255, 255, 255))
                 NutAStar = button(500, 400, 200, 50, "A*", 'lightblue', (255, 255, 255))
                 NutStochastic = button(500, 500, 200, 50, "Stochastic", 'lightblue', (255, 255, 255))
-                
+                NutBacktracking = button(500, 600, 200, 50, "Backtracking", 'lightblue', (255, 255, 255))
 
             elif mode == 'AI vs AI':
                 font = pygame.font.Font(None, 48)
@@ -195,6 +195,9 @@ def START():
                         if NutStochastic and NutStochastic.collidepoint(event.pos):
                             may = 'Stochastic'
                             text = 'Stochastic'
+                        if NutBacktracking and NutBacktracking.collidepoint(event.pos):
+                            may = 'Backtracking'
+                            text = 'Backtracking'
                     if mode == 'AI vs AI':
                         if NutStockfish1 and NutStockfish1.collidepoint(event.pos):
                             may1 = 'Stockfish'
