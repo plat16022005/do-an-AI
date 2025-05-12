@@ -45,7 +45,6 @@ class Board():
         self.screen = screen
 # Vẽ bàn cờ
     def VeBanCo(self, valid_moves=[]):
-        print(loai)
         board_colors = {}
         for row in range(8):
             for col in range(8):

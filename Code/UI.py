@@ -114,13 +114,13 @@ def START():
                 screen.blit(text_AI_border, text_rect_AI_border)
                 screen.blit(text_AI, text_rect_AI)
                 NutStockfish = button(100, 300, 200, 50, "Stockfish", 'darkblue', (255, 255, 255))
-                NutAlphaBeta = button(300, 400, 200, 50, "Alpha-Beta", 'blue', (255, 255, 255))
+                NutAlphaBeta = button(100, 400, 200, 50, "Alpha-Beta", 'blue', (255, 255, 255))
                 NutMCTS = button(100, 500, 200, 50, "MCTS", 'lightblue', (255, 255, 255))
                 NutDFS = button(500, 300, 200, 50, "DFS", 'lightblue', (255, 255, 255))
                 NutAStar = button(500, 400, 200, 50, "A*", 'lightblue', (255, 255, 255))
                 NutStochastic = button(500, 500, 200, 50, "Stochastic", 'lightblue', (255, 255, 255))
                 NutBacktracking = button(500, 600, 200, 50, "Backtracking", 'lightblue', (255, 255, 255))
-                NutAND_OR = button(500, 700, 200, 50, "AND-OR_Search", 'lightblue', (255, 255, 255))
+                NutAND_OR = button(100, 600, 200, 50, "AND-OR_Search", 'lightblue', (255, 255, 255))
                 
             elif mode == 'AI vs AI':
                 font = pygame.font.Font(None, 48)
@@ -135,18 +135,29 @@ def START():
                 screen.blit(text_VS, text_VS.get_rect(center=(400, 400)))
 
                 # AI 1
-                NutStockfish1 = button(100, 300, 200, 50, "Stockfish", 'darkblue', (255, 255, 255))
-                NutAlphaBeta1 = button(100, 400, 200, 50, "Alpha-Beta", 'blue', (255, 255, 255))
-                NutMCTS1 = button(100, 500, 200, 50, "MCTS", 'lightblue', (255, 255, 255))
-                screen.blit(font3.render(text1, True, (0, 0, 0)), font3.render(text1, True, (0, 0, 0)).get_rect(center=(200, 250)))
-                screen.blit(font2.render(text1, True, (255, 255, 255)), font2.render(text1, True, (255, 255, 255)).get_rect(center=(200, 250)))
+                NutStockfish1 = button(100, 100, 200, 50, "Stockfish", 'darkblue', (255, 255, 255))
+                NutAlphaBeta1 = button(100, 150, 200, 50, "Alpha-Beta", 'blue', (255, 255, 255))
+                NutMCTS1 = button(100, 200, 200, 50, "MCTS", 'lightblue', (255, 255, 255))
+                NutDFS1 = button(100, 250, 200, 50, "DFS", 'lightblue', (255, 255, 255))
+                NutAStar1 = button(100, 300, 200, 50, "A*", 'lightblue', (255, 255, 255))
+                NutStochastic1 = button(100, 350, 200, 50, "Stochastic", 'lightblue', (255, 255, 255))
+                NutBacktracking1 = button(100, 400, 200, 50, "Backtracking", 'lightblue', (255, 255, 255))
+                NutAND_OR1 = button(100, 450, 200, 50, "AND-OR_Search", 'lightblue', (255, 255, 255))
+                
+                screen.blit(font3.render(text1, True, (0, 0, 0)), font3.render(text1, True, (0, 0, 0)).get_rect(center=(200, 50)))
+                screen.blit(font2.render(text1, True, (255, 255, 255)), font2.render(text1, True, (255, 255, 255)).get_rect(center=(200, 50)))
 
                 # AI 2
-                NutStockfish2 = button(500, 300, 200, 50, "Stockfish", 'darkblue', (255, 255, 255))
-                NutAlphaBeta2 = button(500, 400, 200, 50, "Alpha-Beta", 'blue', (255, 255, 255))
-                NutMCTS2 = button(500, 500, 200, 50, "MCTS", 'lightblue', (255, 255, 255))
-                screen.blit(font3.render(text2, True, (0, 0, 0)), font3.render(text2, True, (0, 0, 0)).get_rect(center=(600, 250)))
-                screen.blit(font2.render(text2, True, (255, 255, 255)), font2.render(text2, True, (255, 255, 255)).get_rect(center=(600, 250)))
+                NutStockfish2 = button(500, 100, 200, 50, "Stockfish", 'darkblue', (255, 255, 255))
+                NutAlphaBeta2 = button(500, 150, 200, 50, "Alpha-Beta", 'blue', (255, 255, 255))
+                NutMCTS2 = button(500, 200, 200, 50, "MCTS", 'lightblue', (255, 255, 255))
+                NutDFS2 = button(500, 250, 200, 50, "DFS", 'lightblue', (255, 255, 255))
+                NutAStar2 = button(500, 300, 200, 50, "A*", 'lightblue', (255, 255, 255))
+                NutStochastic2 = button(500, 350, 200, 50, "Stochastic", 'lightblue', (255, 255, 255))
+                NutBacktracking2 = button(500, 400, 200, 50, "Backtracking", 'lightblue', (255, 255, 255))
+                NutAND_OR2 = button(500, 450, 200, 50, "AND-OR_Search", 'lightblue', (255, 255, 255))
+                screen.blit(font3.render(text2, True, (0, 0, 0)), font3.render(text2, True, (0, 0, 0)).get_rect(center=(600, 50)))
+                screen.blit(font2.render(text2, True, (255, 255, 255)), font2.render(text2, True, (255, 255, 255)).get_rect(center=(600, 50)))
 
             NutPlay = button(300, 700, 200, 50, "Play", 'darkgray', (255, 255, 255))
 
@@ -212,6 +223,21 @@ def START():
                         if NutMCTS1 and NutMCTS1.collidepoint(event.pos):
                             may1 = 'MCTS'
                             text1 = 'MCTS'
+                        if NutDFS1 and NutDFS1.collidepoint(event.pos):
+                            may1 = 'DFS'
+                            text1 = 'DFS'
+                        if NutAStar1 and NutAStar1.collidepoint(event.pos):
+                            may1 = 'A*'
+                            text1 = 'A*'
+                        if NutStochastic1 and NutStochastic1.collidepoint(event.pos):
+                            may1 = 'Stochastic'
+                            text1 = 'Stochastic'
+                        if NutBacktracking1 and NutBacktracking1.collidepoint(event.pos):
+                            may1 = 'Backtracking'
+                            text1 = 'Backtracking'
+                        if NutAND_OR1 and NutAND_OR1.collidepoint(event.pos):
+                            may1 = 'AND-OR'
+                            text1 = 'AND-OR'
                         if NutStockfish2 and NutStockfish2.collidepoint(event.pos):
                             may2 = 'Stockfish'
                             text2 = 'Stockfish'
@@ -221,6 +247,21 @@ def START():
                         if NutMCTS2 and NutMCTS2.collidepoint(event.pos):
                             may2 = 'MCTS'
                             text2 = 'MCTS'
+                        if NutDFS2 and NutDFS2.collidepoint(event.pos):
+                            may2 = 'DFS'
+                            text2 = 'DFS'
+                        if NutAStar2 and NutAStar2.collidepoint(event.pos):
+                            may2 = 'A*'
+                            text2 = 'A*'
+                        if NutStochastic2 and NutStochastic2.collidepoint(event.pos):
+                            may2 = 'Stochastic'
+                            text2 = 'Stochastic'
+                        if NutBacktracking2 and NutBacktracking2.collidepoint(event.pos):
+                            may2 = 'Backtracking'
+                            text2 = 'Backtracking'
+                        if NutAND_OR2 and NutAND_OR2.collidepoint(event.pos):
+                            may2 = 'AND-OR'
+                            text2 = 'AND-OR'
                     if NutPlay and NutPlay.collidepoint(event.pos):
                         if mode == 'P vs AI' and text != 'AI':
                             running = False

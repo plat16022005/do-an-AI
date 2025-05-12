@@ -9,9 +9,6 @@ pygame.init()
 screen = pygame.display.set_mode((1200, 810))
 
 
-
-
-
 # Khởi tạo AI với kích thước mê cung 27x27, mỗi ô 30px
 ai = AI.Algorithm(screen, MakeMaze.m, MakeMaze.n, 30)
 

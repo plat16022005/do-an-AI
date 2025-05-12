@@ -4,6 +4,7 @@ pygame.init()
 screen = pygame.display.set_mode((1200, 810))
 START = False
 choose_maze = False
+choose_size = False
 maze = ''
 background_image = pygame.image.load("background.jpg")
 background_image = pygame.transform.scale(background_image, (1200, 810))

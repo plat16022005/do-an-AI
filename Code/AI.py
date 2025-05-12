@@ -717,6 +717,7 @@ class MCTSAI:
             if not self.is_check(new_board, is_white):
                 return False
         return True
+
 def a_star_best_move(board, is_white, max_depth=3):
 
     def f_score(g, h):

@@ -1,6 +1,7 @@
 import pygame
 import stockfish
 import AI
+import UI
 
 quan_da_chon = None  # Biến toàn cục để lưu quân đang được chọn
 luot = 't'
@@ -667,7 +668,10 @@ def CapNhatBanCo(banco_matrix, nuoc_di):
     - nuoc_di: Nước đi dưới dạng tuple (start_row, start_col, end_row, end_col).
     - Trả về bàn cờ đã được cập nhật.
     """
-    (start_row, start_col), (end_row, end_col) = nuoc_di
+    if UI.may == 'alpha-beta prunning' or UI.may == 'MCTS':
+        start_row, start_col, end_row, end_col = nuoc_di
+    else:
+        (start_row, start_col), (end_row, end_col) = nuoc_di
 
     # Kiểm tra nếu nước đi là nhập thành
     if abs(start_col - end_col) == 2 and banco_matrix[start_row][start_col] in ['vt', 'vd']:
