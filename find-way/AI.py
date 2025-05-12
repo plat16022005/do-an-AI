@@ -247,7 +247,7 @@ class Algorithm:
                 if result :
                     return result
         return None
-    def AND_OR_SEARCH(self,Maze,start,goal,depth = 1):
+    def AND_OR_SEARCH(self,Maze,start,goal,depth = 30):
         visited = set()
         path = self.OR_Search(Maze,start,goal,[],visited,depth)
         return path
@@ -264,7 +264,7 @@ class Algorithm:
             new_x,new_y = x + dx, y + dy
             if self.Check(new_x,new_y) and Maze[new_x][new_y] == 0 and (new_x,new_y) not in visited:
                 lst = []
-                # if random.random() < 0.7:
+                # if random.random() < 0.9:
                 #     lst.append((new_x,new_y))
                 # else:
                 #     lst.append((x,y))
@@ -280,6 +280,7 @@ class Algorithm:
             res = self.OR_Search(Maze,step,goal,path,visited,depth-1)
             if not res :
                 return None
+            result.extend(res)
         return result
         
 def draw_way(screen, maze, cell_size):
