@@ -6,7 +6,7 @@ START = False
 choose_maze = False
 choose_size = False
 maze = ''
-background_image = pygame.image.load("background.jpg")
+background_image = pygame.image.load("find-way/background.jpg")
 background_image = pygame.transform.scale(background_image, (1200, 810))
 background_image_rect = background_image.get_rect(center = (600, 405))
 def button(x, y, width, height, text, color, text_color):

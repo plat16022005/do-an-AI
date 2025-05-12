@@ -215,8 +215,73 @@ class Algorithm:
                     if current_state == goal:
                         return path_mazes
         return None
-
-
+    
+    def rangbuoc(self,x,y,new_x,new_y,goal):
+        if Manhattan_Heuristic((new_x,new_y),goal) > Manhattan_Heuristic((x,y),goal)+3:
+            return True
+        return False
+    
+    def Backtracking(self,Maze,start,goal,path = None,visited = None):
+        
+        if path is None:
+            path = []
+        if visited is None:
+            visited = set()
+        
+        x,y = start 
+        if start == goal:
+            maze = copy.deepcopy(Maze)
+            maze[x][y] = 3
+            return path + [maze]
+        
+        visited.add((x,y))
+        Maze[x][y] = 3
+        
+        for dx,dy in self.Moves:
+            new_x, new_y = x + dx, y + dy 
+            if self.rangbuoc(x,y,new_x,new_y,goal):
+                continue
+            if self.Check(new_x, new_y) and Maze[new_x][new_y] == 0 and (new_x, new_y) not in visited:
+                new_maze = copy.deepcopy(Maze)
+                result = self.Backtracking(copy.deepcopy(new_maze),(new_x,new_y),goal,path + [new_maze],visited.copy())
+                if result :
+                    return result
+        return None
+    def AND_OR_SEARCH(self,Maze,start,goal,depth = 1):
+        visited = set()
+        path = self.OR_Search(Maze,start,goal,[],visited,depth)
+        return path
+    def OR_Search(self,Maze,start,goal,path,visited,depth):
+        x,y = start
+        if start == goal or depth == 0: 
+            maze = copy.deepcopy(Maze)
+            maze[x][y] = 3
+            return path + [maze]
+        visited.add((x,y))
+        Maze[x][y] = 3
+        
+        for dx,dy in self.Moves:
+            new_x,new_y = x + dx, y + dy
+            if self.Check(new_x,new_y) and Maze[new_x][new_y] == 0 and (new_x,new_y) not in visited:
+                lst = []
+                # if random.random() < 0.7:
+                #     lst.append((new_x,new_y))
+                # else:
+                #     lst.append((x,y))
+                lst.append((new_x,new_y))
+                new_maze = copy.deepcopy(Maze)
+                result = self.AND_Search(copy.deepcopy(new_maze),(new_x,new_y),goal,path + [new_maze],visited.copy(),lst,depth-1)
+                if result:
+                    return result
+        return None
+    def AND_Search(self,Maze,start,goal,path,visited,lst,depth):
+        result = []
+        for step in lst:
+            res = self.OR_Search(Maze,step,goal,path,visited,depth-1)
+            if not res :
+                return None
+        return result
+        
 def draw_way(screen, maze, cell_size):
     for i in range(len(maze)):
         for j in range(len(maze[i])):

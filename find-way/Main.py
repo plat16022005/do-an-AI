@@ -89,6 +89,18 @@ while running:
             elif Button_Random_Goal.collidepoint(mouse_x, mouse_y):
                 if choose == False:
                     goal_pos = MakeMaze.random_goal(path[-1])
+            elif Button_Backtracking.collidepoint(mouse_x, mouse_y):
+                path_ai = ai.Backtracking(path[-1], start_pos, goal_pos)
+                choose = True
+                done = False
+                drawn_path = False
+                index_ai = 0
+            elif Button_AND_OR_SEARCH.collidepoint(mouse_x, mouse_y):
+                path_ai = ai.AND_OR_SEARCH(path[-1], start_pos, goal_pos)
+                choose = True
+                done = False
+                drawn_path = False
+                index_ai = 0
 
     screen.fill('white')
 
@@ -103,6 +115,8 @@ while running:
     Button_Beam = button(820, 350, 160, 50, "Beam", 'blue', 'white')
     Button_Steepest = button(820, 450, 160, 50, "Steepest", 'blue', 'white')
     Button_QLearning = button(820, 550, 160, 50, "Q-Learning", 'blue', 'white')
+    Button_Backtracking = button(820, 650, 160, 50, "Backtracking", 'blue', 'white')
+    Button_AND_OR_SEARCH = button(820, 750, 160, 50, "AND-OR", 'blue', 'white')
     
     Button_Result = button(1000, 50, 160, 50, "Result", 'red', 'white')
     Button_Random_Goal = button(1000, 250, 160, 50, "Random Goal", 'green', 'white')
