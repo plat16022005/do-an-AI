@@ -652,6 +652,11 @@ def AIChoi(stockfish, banco_matrix, luot, luachon, thoi_gian=2.0):
             _,move = AI.backtracking(banco_matrix, is_white=is_white)
             if move:
                 return move
+        elif luachon == 'AND-OR':
+            is_white = (luot == 't')
+            move = AI.AND_OR_SEARCH(banco_matrix, is_white=is_white)
+            if move:
+                return move
     return None
 
 

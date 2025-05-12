@@ -860,12 +860,26 @@ def constraints(board,is_white,move):
     
     return True
 
+
+def is_checkmate( board, is_white):
+        """Kiểm tra chiếu bí"""
+        if not king_is_checked(board, is_white):
+            return False
+        
+        # Kiểm tra xem có nước đi hợp lệ nào không
+        moves = generate_all_moves(board, is_white)
+        for move in moves:
+            new_board = make_move(board, move)
+            if not king_is_checked(new_board, is_white):
+                return False
+        return True
+
 def backtracking(board, is_white, depth=2): 
     
     best_move = None
     best_eval = -float('inf') if is_white else float('inf')
     
-    if depth == 0:
+    if depth == 0 or is_checkmate(board, is_white):
         return evaluate_board(board), None
     
     moves = generate_all_moves(board, is_white)
@@ -885,3 +899,70 @@ def backtracking(board, is_white, depth=2):
                 best_move = move
 
     return best_eval,best_move
+
+def AND_OR_SEARCH(board, is_white,depth = 1):
+    path = []
+    plan = OR_SEARCH(board, is_white, path,depth)
+    return plan
+
+def OR_SEARCH(board, is_white, path,depth):
+    if is_checkmate(board, not is_white) or depth == 0:
+        return path
+
+    moves = generate_all_moves(board, is_white)
+    if not moves:
+        return None
+    
+    move_score =[]
+    for move in moves:
+        if not constraints(board, is_white, move):
+            continue
+        new_board = make_move(board, move)
+        if not new_board:
+            continue
+        eval_score = evaluate_board(new_board)
+        move_score.append((move,eval_score))
+
+    move_score = sorted(move_score,key=lambda x: x[1],reverse=is_white) 
+
+    choice = soft_choice(move_score)
+    if not choice:
+        return None
+    else:
+        for move,_ in choice:
+            new_board = make_move(board, move)
+            plan = AND_SEARCH(new_board, not is_white, path + [move],depth-1)
+            if plan:
+                return plan[0]
+    return None
+
+def AND_SEARCH(board, is_white, path,depth):
+    if is_checkmate(board, not is_white) or depth == 0 :
+        return path
+
+    moves = generate_all_moves(board, is_white)
+    if not moves:
+        return None
+
+    for move in moves:
+        if not constraints(board, is_white, move):
+            continue
+        new_board = make_move(board, move)
+        if new_board in path:
+            continue
+        plan = OR_SEARCH(new_board, not is_white, path + [move],depth-1)
+        if not plan:
+            return None  
+    return path
+
+def soft_choice(move_score, k = 3 ):
+    if move_score == []:
+        return []
+    
+    weights = []
+    for i in range(len(move_score),0,-1):
+        weights.append((i+1) * 10)    
+    
+    selected = random.choices(move_score, weights=weights, k=1)
+    
+    return selected
