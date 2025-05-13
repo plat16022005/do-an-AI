@@ -3,8 +3,8 @@ import pygame
 import numpy as np
 from collections import deque
 import math
-n, m = 27, 27
-
+import UI
+n, m = UI.size, UI.size
 directions = [(-2, 0), (2, 0), (0, -2), (0, 2)]
 
 def is_valid(x, y):
@@ -100,7 +100,7 @@ def draw_maze(screen, maze):
     for i in range(n):
         for j in range(m):
             if maze[i][j] == 1:
-                pygame.draw.rect(screen, 'black', (j * 30, i * 30, 30, 30))
+                pygame.draw.rect(screen, 'black', (j * (810/m), i * (810/m), (810/m), (810/m)))
 def random_goal(maze):
     x = random.randint(1, n-2)
     y = random.randint(1, m-2)

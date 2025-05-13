@@ -1,6 +1,6 @@
 import pygame
-import MakeMaze
-import AI
+
+
 import UI
 
 pygame.init()
@@ -8,9 +8,12 @@ pygame.init()
 # Khởi tạo màn hình
 screen = pygame.display.set_mode((1200, 810))
 
+UI.VeUI()
 
+import MakeMaze
+import AI
 # Khởi tạo AI với kích thước mê cung 27x27, mỗi ô 30px
-ai = AI.Algorithm(screen, MakeMaze.m, MakeMaze.n, 30)
+ai = AI.Algorithm(screen, MakeMaze.m, MakeMaze.n, (810/MakeMaze.m))
 
 # Tìm đường đi từ vị trí bắt đầu đến goal
 # Biến điều khiển
@@ -22,13 +25,13 @@ done = False
 choose = False
 clock = pygame.time.Clock()
 maze_type = ''
-UI.VeUI()
+
 if UI.maze == 'bfs':
     path = MakeMaze.bfs(1,1)
 elif UI.maze == 'dfs':
     path = MakeMaze.dfs(1,1)
 elif UI.maze == 'prim':
-    path = MakeMaze.prim_maze(27,27,1,1)
+    path = MakeMaze.prim_maze(MakeMaze.m,MakeMaze.m,1,1)
 
 goal_pos = MakeMaze.random_goal(path[-1])
 start_pos = [1, 1]
@@ -89,6 +92,8 @@ while running:
             elif Button_Random_Goal.collidepoint(mouse_x, mouse_y):
                 if choose == False:
                     goal_pos = MakeMaze.random_goal(path[-1])
+            elif Button_Result_Maze.collidepoint(mouse_x,mouse_y):
+                index = len(path)-1
             elif Button_Backtracking.collidepoint(mouse_x, mouse_y):
                 path_ai = ai.Backtracking(path[-1], start_pos, goal_pos)
                 choose = True
@@ -105,7 +110,7 @@ while running:
     screen.fill('white')
 
     # Vẽ vị trí bắt đầu
-    pygame.draw.rect(screen, 'red', (start_pos[0]*30, start_pos[1]*30, 30, 30))
+    pygame.draw.rect(screen, 'red', (start_pos[0]*(810/MakeMaze.m), start_pos[1]*(810/MakeMaze.m), (810/MakeMaze.m), (810/MakeMaze.m)))
 
     # Vẽ mê cung theo từng bước
     MakeMaze.draw_maze(screen, path[index])
@@ -119,6 +124,7 @@ while running:
     Button_AND_OR_SEARCH = button(820, 750, 160, 50, "AND-OR", 'blue', 'white')
     
     Button_Result = button(1000, 50, 160, 50, "Result", 'red', 'white')
+    Button_Result_Maze = button(1000,750,160,50, "Result Maze", 'red', 'white')
     Button_Random_Goal = button(1000, 250, 160, 50, "Random Goal", 'green', 'white')
     # Tăng index cho đến khi vẽ hết
     if index < len(path) - 1 and not maked_maze:
@@ -127,10 +133,10 @@ while running:
         maked_maze = True
     if choose:
         if maked_maze and not done:
-            pygame.draw.rect(screen, 'green', (goal_pos[1] * 30, goal_pos[0] * 30, 30, 30))
+            pygame.draw.rect(screen, 'green', (goal_pos[1] * (810/MakeMaze.m), goal_pos[0] * (810/MakeMaze.m), (810/MakeMaze.m), (810/MakeMaze.m)))
             # Vẽ đường đi của AI
             if index_ai < len(path_ai) - 1 and not drawn_path:
-                AI.draw_way(screen, path_ai[index_ai], 30)
+                AI.draw_way(screen, path_ai[index_ai], (810/MakeMaze.m))
                 index_ai += 1
             else:
                 drawn_path = True
@@ -138,13 +144,13 @@ while running:
         # Vẽ mê cung đã hoàn thành
         if done:
             MakeMaze.draw_maze(screen, path[-1])
-            AI.draw_way(screen, path_ai[-1], 30)
+            AI.draw_way(screen, path_ai[-1], (810/MakeMaze.m))
             pygame.time.delay(1000)
     else:
         # Vẽ mê cung đã hoàn thành
         MakeMaze.draw_maze(screen, path[-1])
         if maked_maze:
-            pygame.draw.rect(screen, 'green', (goal_pos[1] * 30, goal_pos[0] * 30, 30, 30))
+            pygame.draw.rect(screen, 'green', (goal_pos[1] * (810/MakeMaze.m), goal_pos[0] * (810/MakeMaze.m), (810/MakeMaze.m), (810/MakeMaze.m)))
     pygame.display.flip()
     clock.tick(10)  # Giới hạn tốc độ khung hình
 

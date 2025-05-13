@@ -18,7 +18,7 @@ class Algorithm:
         self.Moves = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
     def Check(self, x, y):
-        return 0 <= x < self.height_maze and 0 <= y < self.width_maze  # chú ý: height là hàng, width là cột
+        return 0 < x < self.height_maze and 0 < y < self.width_maze  # chú ý: height là hàng, width là cột
 
     def Chinh_Sua_Ma_Tran(self, board, x, y, new_x, new_y):
         new_board = copy.deepcopy(board)
@@ -164,10 +164,7 @@ class Algorithm:
 
         return None
 
-
-
-
-    def q_study(self, Maze, start, goal, epsilon=0.1, episodes=100):
+    def q_study(self, Maze, start, goal, epsilon=0.01, episodes=1000000):
         start = tuple(start)
         goal = tuple(goal)
         q_table = {}
@@ -200,9 +197,18 @@ class Algorithm:
                 new_x = current_state[0] + self.Moves[action][0]
                 new_y = current_state[1] + self.Moves[action][1]
                 new_state = (new_x, new_y)
-
-                if self.Check(new_x, new_y) and Maze[new_x][new_y] == 0:
-                    reward = -1 if new_state != goal else 100
+                if maze_copy[new_x][new_y] == 1:
+                    q_table[state_key][action] += -1000000
+                    continue
+                if self.Check(new_x,new_y):
+                    
+                    if new_state != goal:
+                        if maze_copy[new_x][new_y] == 0:
+                            reward = -1
+                        if maze_copy[new_x][new_y] == 3:
+                            reward = -2
+                    else: 
+                        reward = 10000000000
                     q_table[state_key][action] += reward + max(q_table[new_state])
                     current_state = new_state
                     way.append(current_state)
@@ -211,9 +217,12 @@ class Algorithm:
                     maze_copy = copy.deepcopy(path_mazes[-1])
                     maze_copy[new_x][new_y] = 3
                     path_mazes.append(maze_copy)
-
+                    if maze_copy[new_x][new_y] == 1:
+                        break
                     if current_state == goal:
                         return path_mazes
+                else:
+                    break
         return None
     
     def rangbuoc(self,x,y,new_x,new_y,goal):
@@ -270,7 +279,6 @@ class Algorithm:
                     lst.append((x,y))
                 new_maze = copy.deepcopy(Maze)
                 result = self.AND_Search(copy.deepcopy(new_maze),(new_x,new_y),goal,path + [new_maze],visited.copy(),lst,depth-1)
-                print(1)
                 if result:
                     return result
         return None
