@@ -60,14 +60,29 @@ Dự án bao gồm hai ứng dụng chính: một trò chơi Cờ Vua với các
 4.  Trên giao diện ứng dụng:
     * Nhấn nút "Start".
     * Chọn kích thước cho mê cung.
+      ![image](https://github.com/user-attachments/assets/0d27f908-028e-4283-b9d6-d63c2d6b9721)
+
     * Chọn thuật toán để tạo mê cung.
+      ![image](https://github.com/user-attachments/assets/5ea39f11-f5ad-468b-818a-fc3c9aac0825)
+
     * Nhấn nút "điểm đích ngẫu nhiên" để chương trình tự chọn điểm kết thúc.
     * Sau khi đã có điểm đích, chọn thuật toán để tìm đường đi trong mê cung.
+      ![image](https://github.com/user-attachments/assets/776a9c0c-aaea-41f3-bde4-15f068d8c3c8)
+
 5.  Ứng dụng Pygame sẽ thoát khi người dùng đóng cửa sổ.
 ### So sánh thuật toán:
 1. Đối với A*: Thì nhóm sử dụng Heuristic là khoảng cách Manhattan, vì Heuristic làm cũng khá là tối ưu, vì thế quảng đường tìm ra là khá tốt.
+   
+   ![2025-05-16 00-18-03](https://github.com/user-attachments/assets/5fb46dd7-863a-4a20-b4a7-d9691e570d52)
+
 2. Đối với Steepest Hill Climbing: Thì nó sẽ chọn đường đi dóc nhất, khi gặp vị trí mà khoảng cách Manhattan lớn hơn hiện tại thì sẽ kẹt ở cục bộ
+
+   ![2025-05-16 00-21-16](https://github.com/user-attachments/assets/440cd450-61bf-43e1-aa22-72bdc0ea682c)
+
 3. Đối với q-learning thì nó sẽ chạy theo bảng q-table và kiểm thử đúng sai nhận được điểm khác nhau và nhận điểm thưởng khác nhau. Ví dụ: Đi vào tường thì -100, đi vào đường chưa đi -1, đi vào đường đã đi -2, tới đích +100 và dừng lại khi đã tới đích
+
+   ![2025-05-16 00-23-41](https://github.com/user-attachments/assets/9443e6ba-1063-4909-8ea7-06f6dc72f0b3)
+
 ## Link Github
 Để biết thêm chi tiết và mã nguồn của dự án, bạn có thể truy cập:
 [https://github.com/plat16022005/do-an-AI](https://github.com/plat16022005/do-an-AI)
