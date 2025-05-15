@@ -18,12 +18,30 @@ Dự án bao gồm hai ứng dụng chính: một trò chơi Cờ Vua với các
 4.  Trên giao diện ứng dụng:
     * Nhấn nút "Start".
     * Chọn chế độ chơi mong muốn (P vs P, P vs AI, AI vs AI).
+      ![image](https://github.com/user-attachments/assets/bef4bbb5-adaf-4061-9b82-699170c8885e)
+
     * Nếu chọn chế độ chơi với AI (P vs AI hoặc AI vs AI), hãy chọn thuật toán AI bạn muốn sử dụng.
+      ![image](https://github.com/user-attachments/assets/19237ffe-b88e-4d07-8a07-36e65de175f3)
+      ![image](https://github.com/user-attachments/assets/a888586a-346b-4b79-b762-2ad87171ec28)
+
+
 5.  Trò chơi sẽ kết thúc khi một bên thắng, hoặc khi ván cờ hòa (hòa cờ, chiếu bí).
+   
+   ![2025-05-15 17-12-25](https://github.com/user-attachments/assets/f2a102c5-ef6e-4042-928a-95fc95a051a6)
+
 ### So sánh thuật toán:
 1. Đối với thuật toán DFS: Được hoạt động theo quy luật LIFO (Last In First Out), khi đường đi của một quân cờ vào cuối thì sẽ được đi trước. Trong trường hợp AI ở phía quân đen thì nước đi cuối cùng là của quân tốt bên phải, vì thế AI sẽ đi quân tốt đó đến khi không đi được nữa thì chuyển sang quân tiếp theo
+   
+   ![2025-05-15 17-22-33](https://github.com/user-attachments/assets/e04adbab-306b-489c-82ed-fae96650ca73)
+
 2. Đối với thuật toán And-Or Search: Thì node Or sẽ đưa ra các đường đi khả dỉ cho AI và cho nó một trọng số mỗi nước đi dựa trên tính toán của hàm evaluate_board và được sắp xếp theo thứ tự từ nước đi tốt nhất đến tệ nhất, node And được sử dụng để liệt kê ra các nước đi có thể có của đối thủ sau khi thực hiện một hành động bất kì tại node Or. Nước đi của AI sẽ được chọn ngẫu nhiên dựa vào trong số tại node Or, trọng số càng cao tỉ lệ được chọn càng cao. Vì thế sẽ có một số nước đi là tối ưu và một số nước đi là ngu ngốc
+
+   ![2025-05-15 17-25-06](https://github.com/user-attachments/assets/51485088-6e5d-4ad1-a95c-89089e4b6ccd)
+
 3. Đối với thuật toán Backtracking: dùng đệ quy để xét hết nước đi có thể đi được và lấy nước đi tối ưu điều kiện để dừng là duyệt hết độ sâu hoặc là tìm được trạng thái mà vua bên phe đối thủ bị chiếu bên cạnh đó trong lúc duyệt các nước đi có thể đi được thì cũng xét các ràng buộc để giảm bớt các nước đi "ngu" (khiến vua bị chiếu) hàm trả về giá trị của nước đi và nước đi
+
+   ![2025-05-15 17-28-09 (1)](https://github.com/user-attachments/assets/1df094ed-c6c2-471a-9324-2c7fd8686987)
+
 
 ## 2. Ứng dụng Tìm Đường Đi Trong Mê Cung
 
